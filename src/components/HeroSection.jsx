@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 
 export default function HeroSection() {
   return (
-    <section className="relative bg-[url('/hero-saree.jpg')] bg-cover bg-center h-[70vh] flex items-center justify-center text-white">
-      <div className="bg-black/50 p-10 rounded-xl text-center">
+    <section className="relative w-screen px-3 bg-[url('/hero-saree.jpg')] bg-cover bg-center my-2 flex items-center justify-center text-white">
+      <div className="bg-amber-700/50  w-full p-10 rounded-xl text-center">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

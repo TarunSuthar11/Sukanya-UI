@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+/* Font pairing from Google Fonts: Poppins (body) + Cormorant Garamond (headings) */
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap");
+
+@layer base {
+  body {
+    @apply antialiased text-gray-900;
+    font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Cormorant Garamond", ui-serif, Georgia, "Times New Roman", serif;
+    letter-spacing: 0.01em;
+  }
+}
+
