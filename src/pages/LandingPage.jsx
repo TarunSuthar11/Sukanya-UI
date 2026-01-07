@@ -67,7 +67,7 @@ export default function LandingPage() {
               Handpicked collection of our most elegant and popular sarees
             </p>
           </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
             {featuredProducts.map((product, index) => (
               <motion.div
                 key={product.id}
@@ -98,7 +98,7 @@ export default function LandingPage() {
       </section>
 
       {/* Special Offer Banner */}
-      <section className="py-12 md:py-16 px-4 md:px-6 lg:px-8 bg-gradient-to-r from-amber-600 to-orange-600 text-white">
+      {/* <section className="py-12 md:py-16 px-4 md:px-6 lg:px-8 bg-gradient-to-r from-amber-600 to-orange-600 text-white">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -120,7 +120,7 @@ export default function LandingPage() {
             </Link>
           </motion.div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }

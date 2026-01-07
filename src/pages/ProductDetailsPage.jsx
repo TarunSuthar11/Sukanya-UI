@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiTruck, FiShield, FiHeart } from "react-icons/fi";
 import { BsCart2, BsStarFill } from "react-icons/bs";
 import products from "../data/products";
+import { useContext } from "react";
+import { CartContext } from "../context/CartContext";
 
 const reviewsByProductId = {
   SR0001: [
@@ -60,6 +62,10 @@ export default function ProductDetailsPage() {
   const { productId } = useParams();
   const product = products.find((p) => p.id === productId);
 
+  const navigate = useNavigate();
+
+  const { addToCart } = useContext(CartContext);
+
   const [quantity, setQuantity] = useState(1);
 
   const gallery = useMemo(() => {
@@ -80,6 +86,11 @@ export default function ProductDetailsPage() {
       .filter((p) => p.id !== product.id)
       .slice(0, 4);
   }, [product]);
+
+  const addItem = () => {
+    addToCart(product, quantity);
+    navigate("/cart");
+  };
 
   const reviews = useMemo(() => {
     if (!product) return fallbackReviews;
@@ -193,7 +204,7 @@ export default function ProductDetailsPage() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <button className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-gradient-to-r from-amber-600 to-orange-500 text-white font-semibold shadow-lg hover:shadow-xl transition">
+              <button onClick={addItem} className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-gradient-to-r from-amber-600 to-orange-500 text-white font-semibold shadow-lg hover:shadow-xl transition">
                 Add to Cart
               </button>
               <button className="inline-flex items-center justify-center px-5 py-3 rounded-full border border-amber-200 text-amber-800 font-semibold hover:bg-amber-50 transition">

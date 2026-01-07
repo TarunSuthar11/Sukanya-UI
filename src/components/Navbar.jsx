@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
-import React, { useState } from "react";
+import React, {  useContext, useState } from "react";
 import { BsCart2 } from "react-icons/bs";
 import { IoHeartOutline } from "react-icons/io5";
-
-
+import { CartContext } from "../context/CartContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { cartItems } = useContext(CartContext);
+
 
   return (
     <nav className="sticky top-0 left-0 z-50 w-full backdrop-blur-md bg-white/70 border-b border-white/40 shadow-sm">
@@ -68,7 +69,7 @@ const Navbar = () => {
             >
               <BsCart2 className="text-amber-800 text-xl" />
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[11px] font-bold rounded-full px-1.5">
-                2
+                {cartItems.length}
               </span>
             </Link>
             <Link
@@ -83,7 +84,7 @@ const Navbar = () => {
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 bg-amber-100/50 backdrop-blur-sm z-40 transition-opacity duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        className={`fixed inset-0 bg-amber-100/50 backdrop-blur-sm z-40 transition-opacity duration-300 ${isOpen ? "opacity-50 visible" : "opacity-0 invisible"
           }`}
         onClick={() => setIsOpen(false)}
       />
@@ -132,6 +133,7 @@ const Navbar = () => {
           </Link>
         </div>
       </div>
+     
     </nav>
   );
 };
@@ -150,7 +152,7 @@ const MobileLink = ({ to, label, onClick }) => (
   <Link
     to={to}
     onClick={onClick}
-    className="text-amber-900 font-semibold text-lg px-4 py-3 rounded-xl bg-white/80 hover:bg-white border border-amber-100 transition backdrop-blur-sm"
+    className="text-amber-900 font-semibold text-lg px-4 py-1  hover:bg-white transition backdrop-blur-sm"
   >
     {label}
   </Link>

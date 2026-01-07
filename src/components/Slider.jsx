@@ -83,10 +83,10 @@ export default function Slider() {
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlide}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ duration: 0.7 }}
+          initial={{ opacity: 1, scale: 1, translateX: "0" }}
+          animate={{ opacity: 1, scale: 1, translateX: '0' }}
+          exit={{ opacity: 0.7, translateX: "-100%" }}
+          transition={{ duration: 0.5 }}
           className="absolute inset-0"
         >
           {/* Background Image */}

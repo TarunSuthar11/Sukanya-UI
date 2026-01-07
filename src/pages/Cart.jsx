@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { FiTrash2, FiArrowLeft, FiMinus, FiPlus } from "react-icons/fi";
 import products from "../data/products";
+import { CartContext } from "../context/CartContext";
+import { useContext } from "react";
 
 const initialItems = products.slice(0, 3).map((p) => ({
   ...p,
@@ -11,7 +13,12 @@ const initialItems = products.slice(0, 3).map((p) => ({
 const currency = (value) => `₹${value.toLocaleString()}`;
 
 export default function Cart() {
-  const [items, setItems] = useState(initialItems);
+
+
+
+  const { cartItems ,removeFromCart } = useContext(CartContext);
+
+  const [items, setItems] = useState(cartItems);
 
   const totals = useMemo(() => {
     const subtotal = items.reduce((sum, item) => sum + item.currentPrice * item.quantity, 0);
@@ -80,11 +87,13 @@ export default function Cart() {
                       className="bg-white rounded-2xl border border-amber-100 shadow-md p-4 md:p-5 flex flex-col sm:flex-row gap-4 md:gap-6"
                     >
                       <div className="w-full sm:w-40 h-52 sm:h-40 rounded-xl overflow-hidden bg-amber-50">
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
+                        <Link to={`/products/${item.id}`}>
+                          <img
+                            src={item.imageUrl}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </Link>
                       </div>
 
                       <div className="flex-1 min-w-0 flex flex-col gap-3">
@@ -96,7 +105,7 @@ export default function Cart() {
                             <p className="text-sm text-gray-500 mt-1 truncate">{item.category}</p>
                           </div>
                           <button
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeFromCart(item.id)}
                             className="text-gray-400 hover:text-red-500 transition"
                             aria-label="Remove item"
                           >
