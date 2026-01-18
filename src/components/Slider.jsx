@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import slider1 from "../assets/slider1.png";
+import slider2 from "../assets/slider2.png";
+import slider3 from "../assets/slider3.png";
+import slider4 from "../assets/slider4.png";
 
 const slides = [
   {
@@ -9,42 +13,43 @@ const slides = [
     title: "Elegant Silk Collection",
     subtitle: "Timeless Beauty, Modern Elegance",
     description: "Discover our exquisite collection of handcrafted silk sarees",
-    image: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=1200&h=600&fit=crop",
+    image: slider1,
     cta: "Shop Silk Sarees",
     link: "/category/silk",
-    bgGradient: "from-purple-900/80 to-pink-900/80"
+    bgGradient: "from-purple-900/50 to-pink-900/0"
   },
   {
     id: 2,
     title: "Premium Banarasi Collection",
     subtitle: "Royal Heritage, Contemporary Style",
     description: "Luxurious Banarasi sarees with intricate zari work",
-    image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=1200&h=600&fit=crop",
+    image: slider2,
     cta: "Explore Collection",
     link: "/shop",
-    bgGradient: "from-amber-900/80 to-orange-900/80"
+    bgGradient: "from-amber-900/50 to-orange-900/0"
   },
   {
     id: 3,
     title: "Summer Chiffon Collection",
     subtitle: "Light & Airy, Perfect for Every Occasion",
     description: "Beautiful chiffon sarees for your summer wardrobe",
-    image: "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=1200&h=600&fit=crop",
+    image: slider3,
     cta: "Shop Now",
     link: "/category/chiffon",
-    bgGradient: "from-blue-900/80 to-indigo-900/80"
+    bgGradient: "from-blue-900/50 to-indigo-900/0"
   },
   {
     id: 4,
     title: "Handloom Cotton Collection",
     subtitle: "Comfort Meets Tradition",
     description: "Eco-friendly handloom cotton sarees for everyday elegance",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=1200&h=600&fit=crop",
+    image: slider4,
     cta: "View Collection",
     link: "/category/cotton",
-    bgGradient: "from-green-900/80 to-teal-900/80"
+    bgGradient: "from-green-900/50 to-teal-900/0"
   }
 ];
+
 
 export default function Slider() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -85,7 +90,7 @@ export default function Slider() {
           key={currentSlide}
           initial={{ opacity: 1, scale: 1, translateX: "0" }}
           animate={{ opacity: 1, scale: 1, translateX: '0' }}
-          exit={{ opacity: 0.7, translateX: "-100%" }}
+          exit={{ opacity: 1, translateX: "0" }}
           transition={{ duration: 0.5 }}
           className="absolute inset-0"
         >
@@ -94,11 +99,11 @@ export default function Slider() {
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${slides[currentSlide].image})` }}
           >
-            <div className={`absolute inset-0 bg-gradient-to-r ${slides[currentSlide].bgGradient}`} />
+            <div className={`absolute inset-0 bg-linear-to-r ${slides[currentSlide].bgGradient}`} />
           </div>
 
           {/* Content */}
-          <div className="relative z-10 h-full flex items-center justify-center px-4 md:px-8 lg:px-16">
+          {/* <div className="relative z-10 h-full flex items-center justify-center px-4 md:px-8 lg:px-16">
             <div className="max-w-4xl text-center text-white">
               <motion.h2
                 initial={{ y: 30, opacity: 0 }}
@@ -137,7 +142,7 @@ export default function Slider() {
                 </Link>
               </motion.div>
             </div>
-          </div>
+          </div> */}
         </motion.div>
       </AnimatePresence>
 

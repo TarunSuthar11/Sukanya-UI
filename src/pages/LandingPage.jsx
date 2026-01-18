@@ -18,7 +18,7 @@ export default function LandingPage() {
       </section>
 
       {/* Category Section */}
-      <section className="py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8 bg-gradient-to-b from-white to-amber-50/30">
+      <section className="py-8 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8 bg-linear-to-b from-white to-amber-50/30">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -30,15 +30,15 @@ export default function LandingPage() {
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
               Explore Our Saree Collections
             </h2>
-            <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto">
+            <p className="text-gray-500 text-lg md:text-xl max-w-2xl mx-auto">
               Discover timeless elegance in every weave, from traditional silk to modern chiffon
             </p>
           </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
             {categories.map((cat, index) => (
               <motion.div
                 key={cat.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 5 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -51,7 +51,7 @@ export default function LandingPage() {
       </section>
 
       {/* Featured Products Section */}
-      <section className="py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8 bg-white">
+      <section className="py-8 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -63,11 +63,11 @@ export default function LandingPage() {
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
               Featured Sarees
             </h2>
-            <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto">
+            <p className="text-gray-500 text-lg md:text-xl max-w-2xl mx-auto">
               Handpicked collection of our most elegant and popular sarees
             </p>
           </motion.div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
             {featuredProducts.map((product, index) => (
               <motion.div
                 key={product.id}
@@ -85,11 +85,11 @@ export default function LandingPage() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className="text-center mt-10 md:mt-12"
+            className="text-center mt-6 md:mt-10 lg:mt-12"
           >
             <Link
               to="/shop"
-              className="inline-block bg-amber-700 hover:bg-amber-800 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-lg"
+              className=" inline-block bg-linear-to-r from-amber-600 to-orange-500 hover:bg-amber-800 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-lg"
             >
               View All Products
             </Link>

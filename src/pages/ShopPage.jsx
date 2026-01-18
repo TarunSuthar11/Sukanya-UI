@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import products from "../data/products";
 import ProductCard from "../components/ProductCard";
+import { fetchProducts } from "../service/ProductService";
+import { useQuery } from "@tanstack/react-query";
 
 const categoryFilters = [
   { key: "all", label: "All" },
@@ -10,6 +12,16 @@ const categoryFilters = [
 ];
 
 export default function ShopPage() {
+
+  const {data, isLoading, isFetching} = useQuery({
+    queryKey: ["product"],
+    queryFn: fetchProducts,
+    cacheTime: 5 * 60 * 1000, 
+    staleTime: 2 * 60 * 1000, 
+  });
+
+  
+
   const [activeCategory, setActiveCategory] = useState("all");
   const [sortBy, setSortBy] = useState("featured");
 
@@ -32,7 +44,7 @@ export default function ShopPage() {
   }, [activeCategory, sortBy]);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-amber-50 via-white to-orange-50">
+    <div className="min-h-screen w-full ">
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-10 xl:px-16 py-8 md:py-10">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
           <div>
@@ -64,7 +76,7 @@ export default function ShopPage() {
               onClick={() => setActiveCategory(cat.key)}
               className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
                 activeCategory === cat.key
-                  ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white border-transparent shadow-md"
+                  ? "bg-linear-to-r from-amber-500 to-orange-500 text-white border-transparent shadow-md"
                   : "bg-white text-amber-800 border-amber-200 hover:bg-amber-50"
               }`}
             >
@@ -73,9 +85,9 @@ export default function ShopPage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {filteredProducts.map((p) => (
-            <ProductCard key={p.id} product={p} />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
+          {data?.data.products.map((p) => (
+            <ProductCard key={p._id} product={p} />
           ))}
         </div>
       </div>

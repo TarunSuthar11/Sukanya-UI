@@ -3,64 +3,72 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiTruck, FiShield, FiHeart } from "react-icons/fi";
 import { BsCart2, BsStarFill } from "react-icons/bs";
+import { LuShoppingCart } from "react-icons/lu";
+import { IoMdAdd } from "react-icons/io";
+import { FaMinus } from "react-icons/fa6";
+
+
+
 import products from "../data/products";
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
+import { useQuery } from "@tanstack/react-query";
 
-const reviewsByProductId = {
-  SR0001: [
-    {
-      id: "r1",
-      name: "Ananya S.",
-      rating: 5,
-      date: "Jan 2025",
-      comment: "Loved the drape and the intricate kalamkari motifs. Perfect for daytime events.",
-      images: [
-        "https://source.unsplash.com/600x600/?saree,detail&sig=21",
-        "https://source.unsplash.com/600x600/?saree,texture&sig=22"
-      ]
-    },
-    {
-      id: "r2",
-      name: "Meera K.",
-      rating: 4,
-      date: "Dec 2024",
-      comment: "Fabric is soft and breathable. Colors are slightly softer than the photos but still elegant.",
-      images: ["https://source.unsplash.com/600x600/?saree,blouse&sig=23"]
-    }
-  ]
-};
+import { fetchProduct } from "../service/ProductService";
+import ReviewsCard from "../components/ReviewsCard";
+import { fetchReviews } from "../service/ReviewService";
+import ProductImageSlider from "../components/ProductImageSlider";
 
-const fallbackReviews = [
-  {
-    id: "r-default-1",
-    name: "Priya",
-    rating: 5,
-    date: "Feb 2025",
-    comment: "Gorgeous saree, rich colors and premium feel. Delivery was quick.",
-    images: ["https://source.unsplash.com/600x600/?saree,pattern&sig=24"]
-  },
-  {
-    id: "r-default-2",
-    name: "Shreya",
-    rating: 4,
-    date: "Jan 2025",
-    comment: "The fabric feels luxurious and the fall is great. Blouse piece quality is good too.",
-    images: []
-  },
-  {
-    id: "r-default-3",
-    name: "Nidhi",
-    rating: 5,
-    date: "Dec 2024",
-    comment: "Exactly as shown. Loved the packaging and the subtle zari details.",
-    images: ["https://source.unsplash.com/600x600/?saree,zari&sig=25"]
-  }
-];
+
+
+// Component for for information related to delivery, returns, and quality
+const InfoPill = ({ icon, title, value }) => (
+  <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white border border-gray-100 shadow-sm">
+    <span className="text-emerald-500 text-2xl lg:text-3xl">{icon}</span>
+    <div className="text-sm">
+      <div className="font-semibold text-gray-600">{title}</div>
+      <div className="text-gray-500">{value}</div>
+    </div>
+  </div>
+);
+
+
 
 export default function ProductDetailsPage() {
+
+
   const { productId } = useParams();
-  const product = products.find((p) => p.id === productId);
+
+  const { data: productData, isLoading: productLoading, isFetching: productFetching } = useQuery({
+    queryKey: ["product", productId],
+    queryFn: () => fetchProduct(productId),
+
+    staleTime: 300000,
+    cacheTime: 300000,
+  });
+
+  const { data: reviewData, isLoading: reviewsLoading, isError: reviewsError } = useQuery({
+    queryKey: ["reviews", productId],
+    queryFn: () => fetchReviews(productId),
+    staleTime: 300000,
+    cacheTime: 300000 //caching  for 30 seconds
+  });
+
+
+  const product = productData?.data;
+
+  const reviewsByProduct = reviewData?.data;
+
+  // console.log(reviewsByProduct);
+
+  const reviews = reviewsByProduct?.reviews || [];
+
+  const avgRating =
+    reviews.length > 0
+      ? Number(
+        (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+      )
+      : 0;
 
   const navigate = useNavigate();
 
@@ -68,17 +76,9 @@ export default function ProductDetailsPage() {
 
   const [quantity, setQuantity] = useState(1);
 
-  const gallery = useMemo(() => {
-    if (!product) return [];
-    return [
-      product.imageUrl,
-      `https://source.unsplash.com/1000x1200/?saree,ethnic&sig=${product.id}-1`,
-      `https://source.unsplash.com/1000x1200/?saree,traditional&sig=${product.id}-2`,
-      `https://source.unsplash.com/1000x1200/?saree,fabric&sig=${product.id}-3`
-    ];
-  }, [product]);
 
-  const [activeImage, setActiveImage] = useState(gallery[0]);
+
+  const [activeImage, setActiveImage] = useState('');
 
   const related = useMemo(() => {
     if (!product) return [];
@@ -87,142 +87,182 @@ export default function ProductDetailsPage() {
       .slice(0, 4);
   }, [product]);
 
+
   const addItem = () => {
     addToCart(product, quantity);
-    navigate("/cart");
   };
 
-  const reviews = useMemo(() => {
-    if (!product) return fallbackReviews;
-    return reviewsByProductId[product.id] || fallbackReviews;
-  }, [product]);
+  const buyItem = () => {
+    addToCart(product, quantity);
+    navigate('/cart');
+  };
 
-  if (!product) return <p className="text-center mt-20">Product not found</p>;
+  // const reviews = useMemo(() => {
+  //   if (!product) return fallbackReviews;
+  //   return reviewsByProductId[product.id] || fallbackReviews;
+  // }, [product]);
+
+
 
   const discount = Math.max(
     0,
-    Math.ceil(((product.actualPrice - product.currentPrice) * 100) / product.actualPrice)
+    Math.ceil(((product?.actualPrice - product?.currentPrice) * 100) / product?.actualPrice)
   );
 
   return (
-    <div className="bg-gradient-to-b from-amber-50 via-white to-orange-50 min-h-screen w-full overflow-x-hidden">
-      <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-14">
+    <div className="bg-gray-50 min-h-screen w-full overflow-x-hidden">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-14">
         {/* Breadcrumb */}
-        <div className="text-sm text-gray-500 mb-4 flex gap-2 flex-wrap">
-          <Link to="/" className="hover:text-amber-700">Home</Link>
+        <div className="text-sm text-gray-600 mb-4 flex gap-2 flex-wrap">
+          <Link to="/" className="hover:text-gray-700">Home</Link>
           <span>/</span>
-          <Link to="/shop" className="hover:text-amber-700">Shop</Link>
+          <Link to="/shop" className="hover:text-gray-700">Shop</Link>
           <span>/</span>
-          <span className="text-gray-700 font-medium">{product.name}</span>
+          <span className="text-gray-700 font-medium">{product?.productName}</span>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-10">
-          {/* Gallery */}
-          <div className="space-y-4">
+
+          {/* <div className="space-y-4">
             <motion.div
               key={activeImage}
               initial={{ opacity: 0.6, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
-              className="aspect-[4/5] rounded-3xl overflow-hidden bg-amber-50 shadow-lg border border-amber-100"
+              className="aspect-4/5 rounded-sm overflow-hidden bg-gray-200 shadow-lg "
             >
               <img
                 src={activeImage}
-                alt={product.name}
+                alt={product.productName + " Image"}
                 className="w-full h-full object-cover"
               />
             </motion.div>
             <div className="grid grid-cols-4 gap-3">
-              {gallery.map((img, idx) => (
+              {product.productImages?.map((img, idx) => (
                 <button
-                  key={img}
-                  onClick={() => setActiveImage(img)}
-                  className={`rounded-2xl overflow-hidden border transition ${
-                    activeImage === img ? "border-amber-500 ring-2 ring-amber-200" : "border-transparent"
-                  }`}
+                  key={img._id}
+                  onClick={() => setActiveImage(img.url)}
+                  className={`rounded-sm overflow-hidden  transition ${activeImage === img.url ? "scale-105" : "scale-100 "
+                    }`}
                 >
-                  <img src={img} alt={`thumb-${idx}`} className="w-full h-20 object-cover" />
+                  <img src={img.url} alt={`thumb-${idx}`} className="w-full h-22 object-cover" />
                 </button>
               ))}
             </div>
-          </div>
+          </div> */}
+
+          {productFetching && productLoading ? (
+            <div className="w-full aspect-4/5 rounded-sm overflow-hidden bg-gray-200 shadow-lg animate-pulse" />
+          ) : (
+            <ProductImageSlider images={product.productImages.map(i => i.url)} />
+          )}
+
 
           {/* Details */}
-          <div className="space-y-4">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-                  {product.name}
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">{product.category || "Sarees"}</p>
+          {productLoading ? (
+            <div className="space-y-4">
+              <div className="h-6 w-2/3 bg-gray-200 animate-pulse rounded" />
+              <div className="h-4 w-1/3 bg-gray-200 animate-pulse rounded" />
+              <div className="h-10 w-1/2 bg-gray-200 animate-pulse rounded" />
+              <div className="h-20 w-full bg-gray-200 animate-pulse rounded" />
+              <div className="grid grid-cols-3 gap-3">
+                <div className="h-16 bg-gray-200 animate-pulse rounded" />
+                <div className="h-16 bg-gray-200 animate-pulse rounded" />
+                <div className="h-16 bg-gray-200 animate-pulse rounded" />
               </div>
-              <button className="text-amber-700 hover:text-amber-800 p-2 rounded-full bg-amber-50 border border-amber-100">
-                <FiHeart className="text-xl" />
-              </button>
-            </div>
+              <div className="flex gap-4">
+                <div className="h-12 w-40 bg-gray-200 animate-pulse rounded-full" />
+                <div className="h-12 w-40 bg-gray-200 animate-pulse rounded-full" />
+              </div>
+            </div>) : (
 
-            <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold text-amber-800">₹{product.currentPrice.toLocaleString()}</span>
-              {product.actualPrice > product.currentPrice && (
-                <>
-                  <span className="text-gray-400 line-through text-lg">₹{product.actualPrice.toLocaleString()}</span>
-                  {discount > 0 && <span className="text-green-600 font-semibold">{discount}% OFF</span>}
-                </>
-              )}
-            </div>
+            <div className="space-y-4">
+              <div className="flex items-start   justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl md:text-2xl font-bold text-gray-600 leading-tight">
+                    {product.productName}
+                  </h1>
+                  {/* <p className="text-sm text-gray-500 mt-1">{product.productCategory || "Sarees"}</p> */}
+                </div>
+                <div className="flex items-center  gap-2 p-1 px-2 rounded-md border border-gray-300 ">
+                  <span className="text-lg font-semibold text-gray-600">{avgRating.toPrecision(2) || '0 '}</span>
+                  <BsStarFill className="text-emerald-600 text-lg" />
+                </div>
+              </div>
 
-            <p className="text-gray-700 leading-relaxed">
-              {product.description}
-            </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <InfoPill icon={<FiTruck />} title="Delivery" value="3-5 business days" />
-              <InfoPill icon={<BsCart2 />} title="Returns" value="7-day easy returns" />
-              <InfoPill icon={<FiShield />} title="Quality" value="Premium fabrics" />
-            </div>
 
-            <div className="flex items-center gap-4">
-              <div className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50/60">
+              <div className="flex items-center lg:mt-4 gap-3">
+                <span className="text-gray-400 line-through text-xl">₹{product.actualPrice.toLocaleString()}</span>
+                <span className="text-3xl font-semibold text-gray-800">₹{product.currentPrice.toLocaleString()}</span>
+                {discount > 0 && <span className="text-green-600 text-xl ml-2 font-semibold">{discount}% OFF</span>}
+              </div>
+
+              <p className="text-gray-500 leading-relaxed">
+                {product.description}
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <InfoPill icon={<FiTruck />} title="Delivery" value="5-7 business days" />
+                <InfoPill icon={<LuShoppingCart />} title="Returns" value="3-day easy returns" />
+                <InfoPill icon={<FiShield />} title="Quality" value="Premium fabrics" />
+              </div>
+
+              {/* <div className="flex items-center gap-4">
+              <div className="inline-flex items-center rounded-full border border-gray-200 bg-white ">
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="px-3 py-2 text-amber-800 hover:text-amber-900"
+                  className="px-3 py-2 text-gray-500 text-xl hover:text-gray-700 hover:scale-105 transition"
                 >
-                  -
+                  <FaMinus />
                 </button>
-                <span className="px-4 py-2 text-gray-900 font-semibold">{quantity}</span>
+                <span className="px-2 py-2 text-gray-900 font-semibold">1</span>
                 <button
                   onClick={() => setQuantity((q) => q + 1)}
-                  className="px-3 py-2 text-amber-800 hover:text-amber-900"
+                  className="px-3 py-2 text-gray-500 text-2xl hover:text-gray-700 hover:scale-105 transition"
                 >
-                  +
+                  <IoMdAdd />
                 </button>
               </div>
               <div className="space-y-1 text-sm text-gray-500">
                 <div>Inclusive of all taxes</div>
                 <div>Cash on Delivery available</div>
               </div>
-            </div>
+            </div> */}
 
-            <div className="flex flex-wrap gap-3">
-              <button onClick={addItem} className="inline-flex items-center justify-center px-5 py-3 rounded-full bg-gradient-to-r from-amber-600 to-orange-500 text-white font-semibold shadow-lg hover:shadow-xl transition">
-                Add to Cart
-              </button>
-              <button className="inline-flex items-center justify-center px-5 py-3 rounded-full border border-amber-200 text-amber-800 font-semibold hover:bg-amber-50 transition">
-                Buy Now
-              </button>
-            </div>
+              <div className="flex flex-wrap gap-5 mt-5">
+                <button onClick={addItem} className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-linear-to-r from-amber-400 to-orange-500 text-white font-semibold shadow-lg hover:scale-105 transition">
+                  Add to Cart
+                </button>
+                <button onClick={buyItem} className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-linear-to-r from-yellow-400 to-yellow-500 text-white font-semibold shadow-lg hover:scale-105 transition">
+                  Buy Now
+                </button>
+              </div>
 
-            <div className="mt-6 p-4 rounded-2xl bg-white border border-amber-100 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Product Details</h3>
-              <ul className="text-sm text-gray-700 space-y-1">
-                <li>Fabric: Premium blend</li>
-                <li>Care: Dry clean recommended</li>
-                <li>Origin: Handcrafted in India</li>
-                <li>Inclusions: Saree with running blouse piece</li>
-              </ul>
-            </div>
-          </div>
+              <div className="mt-5 p-4 rounded-2xl bg-white border border-gray-100 shadow-sm pl-6 md:pl-12">
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">Product Details</h3>
+                <ul className="text-sm text-gray-500 space-y-1">
+                  <li><span className="font-semibold">Fabric:</span> {product.fabric || "N/A"}</li>
+                  {product.blouseIncluded && (
+                    <li><span className="font-semibold">Blouse length:</span> {product.blouseLength || "N/A"}</li>
+                  )}
+                  <li><span className="font-semibold">Saree length:</span> {product.sareeLength || "N/A"}</li>
+                  <li><span className="font-semibold">Care:</span> {product.washCare || "Dry Wash Recommended"}</li>
+                  <li><span className="font-semibold">Occasion:</span> {product.occasion || "N/A"}</li>
+                  <li><span className="font-semibold">Brand:</span> {product.brand || "N/A"}</li>
+                  <li><span className="font-semibold">Origin:</span> Handcrafted in India</li>
+                  <li><span className="font-semibold">Inclusions:</span> Saree with running blouse piece</li>
+                </ul>
+              </div>
+            </div>)}
         </div>
+      </div>
+
+      {/* Reviews and Related Products */}
+      <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-14">
+
+
+
 
         {/* Related products */}
         {related.length > 0 && (
@@ -263,54 +303,17 @@ export default function ProductDetailsPage() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-2xl font-bold text-gray-900">Reviews</h3>
             <span className="text-sm text-gray-500">
-              {reviews.length} review{reviews.length !== 1 ? "s" : ""}
+              {reviewsByProduct?.reviews.length} review{reviewsByProduct?.reviews.length !== 1 ? "s" : ""}
             </span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {reviews.map((review) => (
-              <div
-                key={review.id}
-                className="bg-white rounded-2xl border border-amber-100 shadow-md p-5 space-y-3"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="font-semibold text-gray-900">{review.name}</div>
-                    <div className="text-xs text-gray-500">{review.date}</div>
-                  </div>
-                  <div className="flex items-center gap-1 text-amber-500">
-                    {Array.from({ length: 5 }).map((_, idx) => (
-                      <BsStarFill
-                        key={idx}
-                        className={`text-sm ${idx < review.rating ? "opacity-100" : "opacity-20"}`}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-sm text-gray-700 leading-relaxed">{review.comment}</p>
-                {review.images?.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2">
-                    {review.images.slice(0, 3).map((img, idx) => (
-                      <div key={idx} className="rounded-xl overflow-hidden bg-amber-50 h-24">
-                        <img src={img} alt={`review-${idx}`} className="w-full h-full object-cover" />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+            {reviewsByProduct?.reviews.map((review) => (
+              <ReviewsCard key={review._id} review={review} />
             ))}
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 
-const InfoPill = ({ icon, title, value }) => (
-  <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white border border-amber-100 shadow-sm">
-    <span className="text-amber-700 text-xl">{icon}</span>
-    <div className="text-sm">
-      <div className="font-semibold text-gray-900">{title}</div>
-      <div className="text-gray-600">{value}</div>
-    </div>
-  </div>
-);

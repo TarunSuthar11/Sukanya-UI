@@ -10,6 +10,7 @@ import About from "./pages/About";
 import Cart from "./pages/Cart";
 import Signin from "./pages/Signin";
 import NotFound from "./pages/NotFound";
+import CreateReview from "./pages/CreateReview";
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
             <Route path="/category" element={<CategoriesPage />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/sign-in" element={<Signin />} />
+            <Route path="/create-review" element={<CreateReview />} />
             <Route path="/category/:categoryId" element={<CategoryPage />} />
             <Route path="/products/:productId" element={<ProductDetailsPage />} />
             <Route path="*" element={<NotFound />} />

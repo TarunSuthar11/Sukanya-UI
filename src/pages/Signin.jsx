@@ -12,11 +12,11 @@ export default function Signin() {
   const [activeTab, setActiveTab] = useState("email");
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-amber-50 via-white to-orange-50 flex items-start md:items-center justify-center px-4 py-8 md:py-10">
+    <div className="min-h-screen w-full  flex items-start md:items-center justify-center px-4 py-8 md:py-10">
       <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-6 lg:gap-8">
         {/* Left promo */}
         <div className="hidden lg:flex bg-[url('https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center rounded-3xl text-white p-0 overflow-hidden shadow-xl relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-900/80 via-orange-700/80 to-amber-800/80" />
+          <div className="absolute inset-0 bg-linear-to-br from-amber-900/80 via-orange-700/80 to-amber-800/80" />
           <div className="relative z-10 p-10 flex flex-col justify-between">
           <div>
             <p className="uppercase text-sm tracking-[0.25em] opacity-80 mb-4">Welcome to</p>
@@ -132,7 +132,7 @@ const EmailForm = () => (
     </div>
     <button
       type="submit"
-      className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-500 text-white font-semibold shadow-lg hover:shadow-xl transition"
+      className="w-full py-3 rounded-xl bg-linear-to-r from-amber-600 to-orange-500 text-white font-semibold shadow-lg hover:shadow-xl transition"
     >
       Sign in with email
     </button>
@@ -179,7 +179,7 @@ const PhoneForm = () => (
       </button>
       <button
         type="submit"
-        className="flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-500 text-white font-semibold shadow-lg hover:shadow-xl transition"
+        className="flex-1 py-3 rounded-xl bg-linear-to-r from-amber-600 to-orange-500 text-white font-semibold shadow-lg hover:shadow-xl transition"
       >
         Verify & Continue
       </button>

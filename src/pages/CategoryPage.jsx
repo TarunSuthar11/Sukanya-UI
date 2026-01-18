@@ -22,7 +22,7 @@ export default function CategoryPage() {
   const title = categoryMeta ? categoryMeta.name : `${categoryId} Sarees`;
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-amber-50 via-white to-orange-50">
+    <div className="min-h-screen w-full bg-linear-to-b from-amber-50 via-white to-orange-50">
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-10 xl:px-16 py-8 md:py-12">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
           <div>
