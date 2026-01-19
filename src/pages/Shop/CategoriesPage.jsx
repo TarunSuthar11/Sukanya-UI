@@ -1,6 +1,6 @@
 
-import CategoryCard from "../components/CategoryCard";
-import { fetchCategory } from "../service/CategoryService";
+import CategoryCard from "../../components/Home/CategoryCard";
+import { fetchCategory } from "../../service/CategoryService";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 

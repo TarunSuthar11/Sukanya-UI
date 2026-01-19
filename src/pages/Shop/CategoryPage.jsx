@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import products from "../data/products";
-import categories from "../data/categories";
-import ProductCard from "../components/ProductCard";
+import products from "../../data/products";
+import categories from "../../data/categories";
+import ProductCard from "../../components/Product/ProductCard";
 
 export default function CategoryPage() {
   const { categoryId } = useParams();
