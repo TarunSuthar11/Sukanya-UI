@@ -96,7 +96,7 @@ export default function Cart() {
                     className="card-elegant p-4 md:p-5 flex flex-col sm:flex-row gap-4 md:gap-6 hover-lift"
                   >
                     {/* Product Image */}
-                    <div className="w-full sm:w-32 md:w-40 h-48 sm:h-32 md:h-40 rounded-xl overflow-hidden bg-neutral-100 flex-shrink-0">
+                    <div className="w-full sm:w-32 md:w-40 h-48 sm:h-32 md:h-40 rounded-xl overflow-hidden bg-neutral-100 shrink-0">
                       <Link to={`/products/${item._id || item.id}`}>
                         <img
                           src={item.productImages?.[0]?.url || item.imageUrl}
@@ -153,7 +153,7 @@ export default function Cart() {
                           >
                             <FiMinus className="text-sm" />
                           </button>
-                          <span className="px-4 py-2 text-neutral-800 font-semibold min-w-[3rem] text-center">
+                          <span className="px-4 py-2 text-neutral-800 font-semibold min-w-12 text-center">
                             {item.quantity}
                           </span>
                           <button

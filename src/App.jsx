@@ -28,7 +28,7 @@ function App() {
           <div className="flex flex-col min-h-screen">
             <Toast />
             <Navbar />
-            <main className='flex-grow'>
+            <main className='grow'>
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/about" element={<About />} />
