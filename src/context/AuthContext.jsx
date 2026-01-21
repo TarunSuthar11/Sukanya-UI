@@ -1,24 +1,35 @@
-import { createContext, useState } from "react";
-import {api} from "../service/axios.js";
-
-
+import { createContext, useState, useEffect } from "react";
+import { api } from "../service/axios.js";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Mock user for development purposes
+  const [user, setUser] = useState({
+    id: "user-123",
+    firstName: "Tarun",
+    lastName: "Suthar",
+    email: "tarun@example.com",
+    phone: "+91 98765 43210",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Tarun"
+  });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    api.get(`/auth/users/${user.id}`, { withCredentials: true })
-      .then(res => setUser(res.data.user))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
+    // In production, we would fetch the user here
+    // For now, we use the mock user
+    setLoading(false);
   }, []);
 
+  const updateUser = (updatedData) => {
+    setUser(prev => ({ ...prev, ...updatedData }));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={{ user, setUser, loading, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export { AuthContext };

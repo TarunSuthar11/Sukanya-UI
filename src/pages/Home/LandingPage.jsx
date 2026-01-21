@@ -10,7 +10,13 @@ export default function LandingPage() {
   const featuredProducts = products.slice(0, 8);
 
   return (
-    <div className="w-full">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+      className="w-full"
+    >
       {/* Hero Slider Section */}
       <section className="w-full">
         <Slider />
@@ -191,6 +197,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-    </div>
+    </motion.div>
   );
 }

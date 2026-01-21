@@ -12,94 +12,76 @@ export default function Signin() {
   const [activeTab, setActiveTab] = useState("email");
 
   return (
-    <div className="min-h-screen w-full flex items-start md:items-center justify-center px-4 py-8 md:py-10 bg-gradient-soft">
-      <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-6 lg:gap-8">
-        {/* Left promo */}
-        <div className="hidden lg:flex bg-[url('https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center rounded-3xl text-white p-0 overflow-hidden shadow-2xl relative min-h-[600px]">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/80 via-magenta-900/80 to-primary-800/80 mix-blend-multiply" />
-          <div className="relative z-10 p-10 flex flex-col justify-between h-full">
-            <div>
-              <p className="uppercase text-sm tracking-[0.25em] opacity-80 mb-4 font-medium">Welcome to</p>
-              <h1 className="text-5xl font-bold leading-tight mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>Sukanya</h1>
-              <p className="text-lg opacity-90 leading-relaxed text-balance">
-                Discover premium sarees crafted with heritage and elegance. Sign in to track your orders and
-                unlock exclusive offers.
-              </p>
-            </div>
-            <div className="space-y-4 text-sm opacity-90">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">✨</span>
-                <p>Fast checkout and saved addresses</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">📦</span>
-                <p>Order tracking with live updates</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">🎉</span>
-                <p>Early access to festive launches</p>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen w-full flex items-center justify-center px-4 py-12 bg-[#FAF9F6]">
+      {/* Subtle Background Pattern/Texture could go here */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/silk.png')]"></div>
+
+      <div className="w-full max-w-md relative">
+        {/* Logo/Brand Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-serif text-primary-900 mb-2">Sukanya</h1>
+          <p className="text-neutral-500 font-light tracking-widest uppercase text-[10px]">Pure Elegance • Timeless Heritage</p>
         </div>
 
-        {/* Right form */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-6 sm:p-10 flex flex-col justify-center">
-          <div className="flex items-center justify-between gap-3 mb-8">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-neutral-900" style={{ fontFamily: 'Playfair Display, serif' }}>Sign in</h2>
-              <p className="text-sm text-neutral-500 mt-1">Welcome back! Please enter your details.</p>
-            </div>
-            <Link to="/shop" className="hidden sm:inline text-primary-600 text-sm font-semibold hover:text-magenta-600 transition-colors">
-              Continue shopping
-            </Link>
+        <div className="bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-neutral-100 p-8 md:p-10">
+          <div className="mb-8">
+            <h2 className="text-2xl font-serif text-neutral-800 mb-1">Welcome Back</h2>
+            <p className="text-sm text-neutral-400">Please enter your credentials to access your account.</p>
           </div>
 
-          <div className="flex gap-2 mb-8 bg-neutral-100 p-1.5 rounded-2xl">
+          {/* Refined Tabs */}
+          <div className="flex border-b border-neutral-100 mb-8">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === tab.key
-                    ? "bg-white text-primary-700 shadow-md"
-                    : "bg-transparent text-neutral-500 hover:text-neutral-700 hover:bg-neutral-200/50"
+                className={`pb-3 px-6 text-sm font-medium transition-all relative ${activeTab === tab.key
+                    ? "text-primary-700"
+                    : "text-neutral-400 hover:text-neutral-600"
                   }`}
               >
                 {tab.label}
+                {activeTab === tab.key && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 animate-in fade-in slide-in-from-left-2" />
+                )}
               </button>
             ))}
           </div>
 
           {activeTab === "email" ? <EmailForm /> : <PhoneForm />}
 
-          <div className="flex items-center gap-3 my-8">
-            <span className="flex-1 h-px bg-neutral-200" />
-            <span className="text-xs uppercase tracking-[0.2em] text-neutral-400 font-medium">or continue with</span>
-            <span className="flex-1 h-px bg-neutral-200" />
+          <div className="relative my-8 text-center">
+            <span className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-neutral-100"></span>
+            </span>
+            <span className="relative bg-white px-4 text-[10px] uppercase tracking-widest text-neutral-400 font-medium">Or Sign In with</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <button className="flex items-center justify-center gap-2 w-full py-3.5 border-2 border-neutral-100 rounded-xl bg-white hover:bg-neutral-50 hover:border-neutral-200 transition-all duration-300">
-              <FcGoogle className="text-xl" />
-              <span className="text-sm font-semibold text-neutral-700">Google</span>
+          <div className="grid grid-cols-2 gap-4">
+            <button className="flex items-center justify-center gap-2 py-3 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
+              <FcGoogle className="text-lg" />
+              <span className="text-sm font-medium text-neutral-600">Google</span>
             </button>
-            <button className="flex items-center justify-center gap-2 w-full py-3.5 border-2 border-transparent rounded-xl bg-[#1877f2] text-white hover:bg-[#1864f2] hover:shadow-lg transition-all duration-300">
-              <FaFacebookF className="text-lg" />
-              <span className="text-sm font-semibold">Facebook</span>
+            <button className="flex items-center justify-center gap-2 py-3 bg-[#1877f2] text-white rounded-lg hover:bg-[#1864f2] transition-colors shadow-sm">
+              <FaFacebookF className="text-base" />
+              <span className="text-sm font-medium">Facebook</span>
             </button>
           </div>
 
-          <div className="mt-8 space-y-3 text-center text-xs text-neutral-500">
-            <p>
-              By continuing, you agree to our{" "}
-              <Link to="#" className="text-primary-600 font-semibold hover:text-magenta-600 transition-colors">Terms of Service</Link> and{" "}
-              <Link to="#" className="text-primary-600 font-semibold hover:text-magenta-600 transition-colors">Privacy Policy</Link>.
-            </p>
-            <p className="text-sm">
+          <div className="mt-10 text-center">
+            <p className="text-sm text-neutral-500">
               New to Sukanya?{" "}
-              <Link to="#" className="text-primary-600 font-bold hover:text-magenta-600 transition-colors">Create an account</Link>
+              <Link to="/signup" className="text-primary-700 font-semibold hover:underline decoration-primary-200 underline-offset-4">
+                Create an account
+              </Link>
             </p>
           </div>
+        </div>
+
+        <div className="mt-8 text-center">
+          <Link to="/shop" className="text-xs text-neutral-400 hover:text-primary-600 transition-colors">
+            ← Continue Shopping
+          </Link>
         </div>
       </div>
     </div>
@@ -107,89 +89,80 @@ export default function Signin() {
 }
 
 const EmailForm = () => (
-  <form className="space-y-5 animate-fade-in">
-    <div className="space-y-2">
-      <label className="text-sm font-semibold text-neutral-700 flex items-center gap-2">
-        <FaEnvelope className="text-primary-500" />
-        Email address
-      </label>
+  <form className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider block">Email Address</label>
       <input
         type="email"
-        placeholder="you@example.com"
-        className="input-elegant"
+        placeholder="e.g. name@style.com"
+        className="w-full px-0 py-2.5 border-b border-neutral-200 focus:border-primary-600 bg-transparent outline-none transition-colors text-neutral-800 placeholder:text-neutral-300"
         required
       />
     </div>
-    <div className="space-y-2">
-      <label className="text-sm font-semibold text-neutral-700">Password</label>
+    <div className="space-y-1">
+      <div className="flex justify-between items-center">
+        <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider block">Password</label>
+        <Link to="#" className="text-[10px] uppercase tracking-widest text-primary-600 font-bold hover:text-primary-800">Forgot?</Link>
+      </div>
       <input
         type="password"
         placeholder="••••••••"
-        className="input-elegant"
+        className="w-full px-0 py-2.5 border-b border-neutral-200 focus:border-primary-600 bg-transparent outline-none transition-colors text-neutral-800 placeholder:text-neutral-300"
         required
       />
     </div>
-    <div className="flex items-center justify-between text-sm">
-      <label className="flex items-center gap-2 text-neutral-600 cursor-pointer group">
-        <input type="checkbox" className="accent-primary-600 w-4 h-4 rounded border-neutral-300 focus:ring-primary-500" />
-        <span className="group-hover:text-primary-600 transition-colors">Remember me</span>
-      </label>
-      <Link to="#" className="text-primary-600 font-semibold hover:text-magenta-600 transition-colors">
-        Forgot password?
-      </Link>
+
+    <div className="flex items-center gap-2 py-1">
+      <input type="checkbox" id="remember" className="w-3.5 h-3.5 rounded border-neutral-300 text-primary-600 focus:ring-primary-500" />
+      <label htmlFor="remember" className="text-xs text-neutral-500 cursor-pointer">Stay signed in</label>
     </div>
+
     <button
       type="submit"
-      className="w-full btn-primary py-3.5 text-base shadow-elegant hover:shadow-elegant-hover"
+      className="w-full py-4 bg-primary-900 text-white rounded-lg text-sm font-semibold hover:bg-black transition-all shadow-lg shadow-primary-900/10 active:scale-[0.98]"
     >
-      Sign in securely
+      Sign In
     </button>
   </form>
 );
 
 const PhoneForm = () => (
-  <form className="space-y-5 animate-fade-in">
-    <div className="space-y-2">
-      <label className="text-sm font-semibold text-neutral-700 flex items-center gap-2">
-        <FaPhoneAlt className="text-primary-500" />
-        Phone number
-      </label>
-      <div className="flex gap-3">
-        <input
-          type="text"
-          value="+91"
-          readOnly
-          className="w-20 px-3 py-3 rounded-xl border-2 border-neutral-200 bg-neutral-50 text-neutral-600 font-medium text-center"
-        />
+  <form className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider block">Phone Number</label>
+      <div className="flex gap-4">
+        <span className="py-2.5 text-neutral-400 border-b border-neutral-200">+91</span>
         <input
           type="tel"
           placeholder="98765 43210"
-          className="input-elegant"
+          className="w-full px-0 py-2.5 border-b border-neutral-200 focus:border-primary-600 bg-transparent outline-none transition-colors text-neutral-800 placeholder:text-neutral-300"
           required
         />
       </div>
     </div>
-    <div className="space-y-2">
-      <label className="text-sm font-semibold text-neutral-700">OTP Code</label>
+
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wider block">Verification Code</label>
       <input
         type="text"
-        placeholder="Enter 6-digit code"
-        className="input-elegant tracking-widest text-center text-lg"
+        placeholder="Enter 6-digit OTP"
+        className="w-full px-0 py-2.5 border-b border-neutral-200 focus:border-primary-600 bg-transparent outline-none transition-colors text-neutral-800 placeholder:text-neutral-300 tracking-widest"
       />
-      <div className="text-xs text-neutral-500">We’ll send a verification code to your phone.</div>
+      <p className="text-[10px] text-neutral-400 pt-1">We'll send a code to your mobile number.</p>
     </div>
+
     <div className="flex gap-3 pt-2">
       <button
         type="button"
-        className="flex-1 py-3.5 rounded-full border-2 border-neutral-200 text-neutral-600 font-semibold hover:border-primary-500 hover:text-primary-600 transition-all duration-300"
+        className="flex-1 py-3 border border-neutral-200 rounded-lg text-xs font-medium text-neutral-600 hover:border-primary-600 hover:text-primary-600 transition-colors"
       >
         Send OTP
       </button>
       <button
         type="submit"
-        className="flex-1 btn-primary py-3.5 text-base shadow-elegant hover:shadow-elegant-hover"
+        className="flex-1 py-3 bg-primary-900 text-white rounded-lg text-xs font-semibold hover:bg-black transition-colors shadow-lg shadow-primary-900/10"
       >
-        Verify
+        Verify Code
       </button>
     </div>
   </form>

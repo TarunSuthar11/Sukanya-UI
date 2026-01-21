@@ -124,7 +124,7 @@
 
   /* ===== SMOOTH SCROLLING ===== */
   html {
-    scroll-behavior: smooth;
+    /* Instant scroll restoration on navigation */
   }
 
   /* ===== SELECTION ===== */

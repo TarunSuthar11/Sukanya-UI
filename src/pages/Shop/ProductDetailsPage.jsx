@@ -1,10 +1,10 @@
-import { useMemo, useState, useContext } from "react";
+import { useMemo, useState, useContext, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { FiTruck, FiShield, FiHeart } from "react-icons/fi";
 import { BsStarFill } from "react-icons/bs";
 import { LuShoppingCart } from "react-icons/lu";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import products from "../../data/products";
 import { CartContext } from "../../context/CartContext";
@@ -31,6 +31,8 @@ export default function ProductDetailsPage() {
   const navigate = useNavigate();
   const { addToCart } = useContext(CartContext);
   const [quantity, setQuantity] = useState(1);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+  const buyButtonsRef = useRef(null);
 
   const { data: productData, isLoading: productLoading, isFetching: productFetching } = useQuery({
     queryKey: ["product", productId],
@@ -45,6 +47,19 @@ export default function ProductDetailsPage() {
     staleTime: 300000,
     cacheTime: 300000
   });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (buyButtonsRef.current) {
+        const rect = buyButtonsRef.current.getBoundingClientRect();
+        // Show sticky bar if the main buy buttons are above the viewport
+        setShowStickyBar(rect.bottom < 0);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const product = productData?.data;
   const reviewsByProduct = reviewData?.data;
@@ -76,7 +91,13 @@ export default function ProductDetailsPage() {
   );
 
   return (
-    <div className="bg-gradient-soft min-h-screen w-full overflow-x-hidden">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+      className="bg-gradient-soft min-h-screen w-full overflow-x-hidden"
+    >
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8 md:py-16">
         {/* Breadcrumb */}
         <div className="text-sm text-neutral-500 mb-8 flex gap-2 flex-wrap items-center">
@@ -147,7 +168,7 @@ export default function ProductDetailsPage() {
                 <InfoPill icon={<FiShield />} title="Quality Assured" value="Verified sellers" />
               </div>
 
-              <div className="flex flex-wrap gap-4 pt-4">
+              <div ref={buyButtonsRef} className="flex flex-wrap gap-4 pt-4">
                 <button
                   onClick={addItem}
                   className="flex-1 min-w-[160px] btn-secondary text-lg shadow-elegant hover:shadow-elegant-hover flex items-center justify-center gap-2 group"
@@ -164,32 +185,32 @@ export default function ProductDetailsPage() {
               </div>
 
               <div className="mt-8 p-6 rounded-2xl bg-white border border-neutral-200 shadow-sm">
-                <h3 className="text-xl font-bold text-neutral-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Product Details</h3>
+                <h3 className="text-xl font-bold text-neutral-900 mb-4" style={{ fontFamily: 'Tenor Sans, sans-serif' }}>Product Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8 text-sm">
                   <div className="flex justify-between border-b border-neutral-100 pb-2">
-                    <span className="text-neutral-500">Fabric</span>
+                    <span className="text-neutral-500 uppercase tracking-widest text-[10px] font-black">Fabric</span>
                     <span className="font-semibold text-neutral-800">{product.fabric || "N/A"}</span>
                   </div>
                   <div className="flex justify-between border-b border-neutral-100 pb-2">
-                    <span className="text-neutral-500">Saree Length</span>
+                    <span className="text-neutral-500 uppercase tracking-widest text-[10px] font-black">Length</span>
                     <span className="font-semibold text-neutral-800">{product.sareeLength || "5.5 meters"}</span>
                   </div>
                   <div className="flex justify-between border-b border-neutral-100 pb-2">
-                    <span className="text-neutral-500">Blouse</span>
+                    <span className="text-neutral-500 uppercase tracking-widest text-[10px] font-black">Blouse</span>
                     <span className="font-semibold text-neutral-800">{product.blouseIncluded ? "Included" : "Not Included"}</span>
                   </div>
                   {product.blouseIncluded && (
                     <div className="flex justify-between border-b border-neutral-100 pb-2">
-                      <span className="text-neutral-500">Blouse Length</span>
+                      <span className="text-neutral-500 uppercase tracking-widest text-[10px] font-black">Blouse Length</span>
                       <span className="font-semibold text-neutral-800">{product.blouseLength || "0.8 meters"}</span>
                     </div>
                   )}
                   <div className="flex justify-between border-b border-neutral-100 pb-2">
-                    <span className="text-neutral-500">Occasion</span>
+                    <span className="text-neutral-500 uppercase tracking-widest text-[10px] font-black">Occasion</span>
                     <span className="font-semibold text-neutral-800">{product.occasion || "Festive / Party"}</span>
                   </div>
                   <div className="flex justify-between border-b border-neutral-100 pb-2">
-                    <span className="text-neutral-500">Care</span>
+                    <span className="text-neutral-500 uppercase tracking-widest text-[10px] font-black">Care</span>
                     <span className="font-semibold text-neutral-800">{product.washCare || "Dry Clean Only"}</span>
                   </div>
                 </div>
@@ -256,6 +277,44 @@ export default function ProductDetailsPage() {
           </motion.div>
         </div>
       </div>
-    </div>
+
+      {/* Mobile Sticky Buy Bar */}
+      <AnimatePresence>
+        {showStickyBar && product && (
+          <motion.div
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            exit={{ y: 100 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-neutral-100 shadow-[0_-10px_40px_rgba(0,0,0,0.08)] px-4 py-4 md:hidden flex items-center justify-between gap-4"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-12 h-16 rounded-lg overflow-hidden bg-neutral-50 shrink-0">
+                <img src={product.productImages?.[0]?.url || product.imageUrl} className="w-full h-full object-cover" alt="" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-neutral-800 truncate">{product.productName}</p>
+                <p className="text-sm font-black text-primary-700">₹{product.currentPrice.toLocaleString()}</p>
+              </div>
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <button
+                onClick={addItem}
+                className="w-12 h-12 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100 active:scale-90 transition-transform"
+                aria-label="Add to cart"
+              >
+                <LuShoppingCart size={20} />
+              </button>
+              <button
+                onClick={buyItem}
+                className="px-6 py-3 bg-gradient-primary text-white text-xs font-black uppercase tracking-widest rounded-full shadow-lg shadow-primary-100 active:scale-95 transition-transform"
+              >
+                Buy Now
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

@@ -43,7 +43,13 @@ export default function ShopPage() {
   }, [data, activeCategory, sortBy]);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-soft">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+      className="min-h-screen w-full bg-gradient-soft"
+    >
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-10 xl:px-16 py-10 md:py-14">
         {/* Header */}
         <motion.div
@@ -152,6 +158,6 @@ export default function ShopPage() {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
