@@ -30,23 +30,26 @@ const Navbar = () => {
     <>
       <nav className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'glass shadow-lg' : 'bg-white shadow-sm'
         }`}>
-        <div className="flex items-center justify-between mx-auto h-20 px-4 md:px-10 lg:px-12 xl:px-16 max-w-8xl">
+        <div className="flex items-center justify-between mx-auto h-18 px-4  max-w-7xl">
           {/* Left Section - Menu + Logo */}
           <div className="relative flex items-center gap-4 md:w-1/3">
             <button
               onClick={() => setIsOpen(true)}
-              className="md:hidden text-2xl text-primary-600 hover:text-primary-700 transition-colors"
+              className="md:hidden text-xl text-primary-600 hover:text-primary-700 transition-colors"
               aria-label="Open menu"
             >
               <TfiMenu />
             </button>
-            <Link to="/" className="flex items-center gap-2">
+            {/* <Link to="/" className="flex items-center">
               <img
-                src="/sukanya_logo.png"
+                src="Sukanya.png"
                 alt="Sukanya Logo"
-                className="h-12 md:h-14 lg:h-16 object-contain"
+                className="h-11 md:h-13  object-contain"
               />
-            </Link>
+            </Link> */}
+             <h2 className="text-2xl mt-1 lg:text-3xl flex items-center tracking-wider font-bold text-primary-700 ">
+              Sukanya
+            </h2>
           </div>
 
           {/* Center Section - Search (Desktop) */}
@@ -54,7 +57,7 @@ const Navbar = () => {
             <div className="relative w-full max-w-md">
               <input
                 type="text"
-                placeholder="Search for sarees..."
+                placeholder="Search Sarees..."
                 className="w-full px-5 pr-12 py-2.5 rounded-full bg-neutral-100 border-2 border-transparent focus:border-primary-300 focus:bg-white focus:ring-4 focus:ring-primary-100 transition-all duration-300 outline-none text-sm"
               />
               <IoSearchOutline className="absolute right-4 top-1/2 -translate-y-1/2 text-xl text-neutral-400" />
@@ -78,7 +81,7 @@ const Navbar = () => {
             >
               <IoHeartOutline />
               {wishlistItems?.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-gradient-primary text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-md">
+                <span className="absolute -top-2 -right-2 bg-gradient-primary text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-5 text-center shadow-md">
                   {wishlistItems.length}
                 </span>
               )}
@@ -87,7 +90,7 @@ const Navbar = () => {
             <button onClick={openCart} className="relative group p-0 bg-transparent border-none">
               <BsCart2 className="text-2xl text-primary-600 group-hover:text-magenta-600 transition-colors group-hover:scale-110 duration-300" />
               {cartItems.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-gradient-primary text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-md">
+                <span className="absolute -top-2 -right-2 bg-gradient-primary text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-5 text-center shadow-md">
                   {cartItems.length}
                 </span>
               )}
@@ -126,7 +129,7 @@ const Navbar = () => {
 
         {/* Mobile Search */}
         {showSearch && (
-          <div className="md:hidden px-4 py-3 border-t border-neutral-100 animate-fade-in">
+          <div className="md:hidden px-4 py-2 border-t border-neutral-100 animate-fade-in">
             <div className="relative">
               <input
                 type="text"
@@ -142,18 +145,23 @@ const Navbar = () => {
       {/* Overlay - Moved outside <nav> to escape its stacking context/glass effect */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-neutral-900/60 z-[100] backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 bg-neutral-900/60 z-100 backdrop-blur-sm animate-fade-in"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Mobile Drawer - Moved outside <nav> to escape its stacking context/glass effect */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white z-[110] transform transition-transform duration-300 shadow-2xl flex flex-col ${isOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white z-110 transform transition-transform duration-300 shadow-2xl flex flex-col ${isOpen ? "translate-x-0" : "-translate-x-full"
           }`}
       >
-        <div className="p-6 flex justify-between items-center border-b border-neutral-200 shrink-0">
-          <h2 className="font-bold text-2xl text-gradient-primary font-serif">Sukanya</h2>
+        <div className="p-5 px-8  flex justify-between items-center border-b border-neutral-200 shrink-0">
+          {/* <h2 className="font-bold text-2xl text-gradient-primary font-serif">Sukanya</h2> */}
+           <img
+                src="pink_favicon.png"
+                alt="Sukanya Logo"
+                className="h-8 md:h-10 rounded-lg "
+              />
           <button
             onClick={() => setIsOpen(false)}
             className="text-2xl text-neutral-600 hover:text-primary-600 transition-colors"
@@ -169,18 +177,17 @@ const Navbar = () => {
           <MobileLink to="/shop" label="Shop" close={() => setIsOpen(false)} />
           <MobileLink to="/about" label="About" close={() => setIsOpen(false)} />
           <MobileLink to="/my-orders" label="My Orders" close={() => setIsOpen(false)} />
-          <button
+          {/* <button
             onClick={() => {
               setIsOpen(false);
               openCart();
             }}
-            className="text-lg font-medium text-neutral-700 hover:text-primary-600 py-3 px-4 rounded-lg hover:bg-primary-50 transition-all duration-300 flex items-center justify-between"
-          >
+            className="text-lg font-medium text-neutral-700 hover:text-primary-600 py-3 px-4 rounded-lg hover:bg-primary-50 transition-all duration-300 flex items-center justify-between">
             <span>My Bag</span>
             <span className="bg-primary-100 text-primary-700 text-xs font-bold px-2 py-0.5 rounded-full">
               {cartItems.length}
             </span>
-          </button>
+          </button> */}
         </div>
 
         {/* User Profile Section at bottom of sidebar */}
@@ -231,7 +238,7 @@ const MobileLink = ({ to, label, close }) => (
   <Link
     to={to}
     onClick={close}
-    className="text-lg font-medium text-neutral-700 hover:text-primary-600 py-3 px-4 rounded-lg hover:bg-primary-50 transition-all duration-300"
+    className="text-lg font-medium border-b border-neutral-100 text-neutral-700 hover:text-primary-600 py-3 px-4 rounded-lg hover:bg-primary-50 transition-all duration-300"
   >
     {label}
   </Link>

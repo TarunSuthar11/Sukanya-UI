@@ -1,16 +1,33 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { FaCamera, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaHistory, FaSignOutAlt } from "react-icons/fa";
+import { useUpdateUser, useUpdateAvatar } from "../../hooks/useAuthHooks";
+import { FaCamera, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaHistory, FaSignOutAlt, FaTimes, FaSave, FaEdit } from "react-icons/fa";
 
 export default function ProfilePage() {
-    const { user, updateUser } = useContext(AuthContext);
+    const { user, logout } = useContext(AuthContext);
+    const updateMutation = useUpdateUser();
+    const avatarMutation = useUpdateAvatar();
+    const fileInputRef = useRef(null);
+
     const [formData, setFormData] = useState({
-        firstName: user?.firstName || "",
-        lastName: user?.lastName || "",
-        email: user?.email || "",
-        phone: user?.phone || ""
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: ""
     });
     const [isEditing, setIsEditing] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            setFormData({
+                firstName: user.firstName || "",
+                lastName: user.lastName || "",
+                email: user.email || "",
+                phone: user.phone || ""
+            });
+        }
+    }, [user]);
 
     if (!user) {
         return (
@@ -28,9 +45,37 @@ export default function ProfilePage() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSave = () => {
-        updateUser(formData);
-        setIsEditing(false);
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            await updateMutation.mutateAsync({
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                phone: formData.phone
+            });
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Failed to update profile", error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const uploadFormData = new FormData();
+            uploadFormData.append("avatar", file);
+            try {
+                await avatarMutation.mutateAsync(uploadFormData);
+            } catch (error) {
+                console.error("Failed to upload avatar", error);
+            }
+        }
     };
 
     return (
@@ -38,11 +83,11 @@ export default function ProfilePage() {
             <div className="max-w-4xl mx-auto">
 
                 {/* Profile Header */}
-                <div className="bg-white rounded-[2rem] p-8 md:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-neutral-100 flex flex-col md:flex-row items-center gap-10 mb-8">
-                    <div className="relative group">
+                <div className="bg-white rounded-2xl p-8 md:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-neutral-100 flex flex-col md:flex-row items-center gap-10 mb-8">
+                    <div className="relative group cursor-pointer" onClick={handleAvatarClick}>
                         <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-primary-50 shadow-xl transition-all duration-500 group-hover:scale-105">
                             <img
-                                src={user.avatar}
+                                src={user.avatar || "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"}
                                 alt={user.firstName}
                                 className="w-full h-full object-cover"
                             />
@@ -53,6 +98,18 @@ export default function ProfilePage() {
                         >
                             <FaCamera size={14} />
                         </button>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            className="hidden"
+                            accept="image/*"
+                        />
+                        {avatarMutation.isPending && (
+                            <div className="absolute inset-0 bg-white/60 rounded-full flex items-center justify-center">
+                                <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex-1 text-center md:text-left space-y-2">
@@ -90,7 +147,10 @@ export default function ProfilePage() {
                             </span>
                         </button>
                         <div className="pt-4 border-t border-neutral-100">
-                            <button className="w-full flex items-center gap-3 p-4 text-red-500 text-xs font-black uppercase tracking-widest hover:bg-red-50 rounded-2xl transition-all">
+                            <button
+                                onClick={logout}
+                                className="w-full flex items-center gap-3 p-4 text-red-500 text-xs font-black uppercase tracking-widest hover:bg-red-50 rounded-2xl transition-all"
+                            >
                                 <FaSignOutAlt /> Sign Out
                             </button>
                         </div>
@@ -98,7 +158,7 @@ export default function ProfilePage() {
 
                     {/* Form Content Area */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-neutral-100">
+                        <div className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-neutral-100">
                             <div className="flex justify-between items-center mb-8">
                                 <h2 className="text-xl font-serif font-bold text-neutral-800">Personal Details</h2>
                                 {!isEditing ? (

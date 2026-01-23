@@ -4,90 +4,101 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-elegant text-white py-16 mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
+    <footer className="bg-primary-50 border-t border-primary-100 text-neutral-800 py-16 mt-20">
+      <div className="max-w-7xl mx-auto px-8">
 
-          {/* Brand / About */}
-          <div className="space-y-4">
-            <h2 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+
+          {/* Brand ke abre me */}
+          <div className="space-y-6">
+            <h2 className="text-3xl tracking-wider font-bold text-primary-700 mb-2">
               Sukanya
             </h2>
-            <p className="text-sm leading-relaxed text-white/80">
+            <p className="text-sm leading-relaxed text-neutral-600">
               Your trusted destination for premium handcrafted sarees.
               Discover timeless elegance, traditional craftsmanship, and modern designs
               that celebrate the beauty of Indian heritage.
             </p>
-            <div className="space-y-2 pt-2">
-              <div className="flex items-center gap-3 text-sm text-white/90">
-                <FiPhone className="text-lg text-accent-400" />
-                <span>+91 98765 43210</span>
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center gap-3 text-sm group cursor-pointer">
+                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:bg-primary-100 transition-colors">
+                  <FiPhone className="text-primary-600" />
+                </div>
+                <span className="group-hover:text-primary-700 transition-colors">
+                  <a href="tel:+919166799789">+91 9166799789</a>
+                </span>
+
               </div>
-              <div className="flex items-center gap-3 text-sm text-white/90">
-                <FiMail className="text-lg text-accent-400" />
-                <span>care@sukanya.in</span>
+              <div className="flex items-center gap-3 text-sm group cursor-pointer">
+                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:bg-primary-100 transition-colors">
+                  <FiMail className="text-primary-600" />
+                </div>
+                <span className="group-hover:text-primary-700 transition-colors">
+                  <a href="mailto:sukanya.saree.store@gmail.com" target="_blank">sukanya.saree.store@gmail.com</a>
+                </span>
               </div>
-              <div className="flex items-center gap-3 text-sm text-white/90">
-                <FiMapPin className="text-lg text-accent-400" />
-                <span>Mumbai, Maharashtra</span>
+              <div className="flex items-center gap-3 text-sm group cursor-pointer">
+                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:bg-primary-100 transition-colors">
+                  <FiMapPin className="text-primary-600" />
+                </div>
+                <span className="group-hover:text-primary-700 transition-colors">Ahmedabad, Gujrat</span>
               </div>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-xl font-semibold text-white mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <h3 className="text-lg font-medium  text-primary-900 mb-6 relative inline-block after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-8 after:h-0.5 after:bg-primary-300">
               Quick Links
             </h3>
-            <ul className="space-y-2.5 text-sm text-white/80">
+            <ul className="space-y-3 text-sm">
               <li>
-                <Link to="/shop" className="hover:text-accent-300 transition-colors duration-300 hover:translate-x-1 inline-block">
+                <Link to="/shop" className="text-neutral-600 hover:text-primary-600 transition-all duration-300 hover:translate-x-1 inline-block">
                   Shop All Sarees
                 </Link>
               </li>
               <li>
-                <Link to="/category" className="hover:text-accent-300 transition-colors duration-300 hover:translate-x-1 inline-block">
+                <Link to="/category" className="text-neutral-600 hover:text-primary-600 transition-all duration-300 hover:translate-x-1 inline-block">
                   Browse Categories
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="hover:text-accent-300 transition-colors duration-300 hover:translate-x-1 inline-block">
+                <Link to="/about" className="text-neutral-600 hover:text-primary-600 transition-all duration-300 hover:translate-x-1 inline-block">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link to="/cart" className="hover:text-accent-300 transition-colors duration-300 hover:translate-x-1 inline-block">
+                <Link to="/cart" className="text-neutral-600 hover:text-primary-600 transition-all duration-300 hover:translate-x-1 inline-block">
                   Shopping Cart
                 </Link>
               </li>
               <li>
-                <Link to="/sign-in" className="hover:text-accent-300 transition-colors duration-300 hover:translate-x-1 inline-block">
+                <Link to="/sign-in" className="text-neutral-600 hover:text-primary-600 transition-all duration-300 hover:translate-x-1 inline-block">
                   My Account
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Customer Support */}
+          {/* Customer Support.    pending */}
           <div>
-            <h3 className="text-xl font-semibold text-white mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
-              Customer Support
+            <h3 className="text-lg font-medium text-primary-900 mb-6 relative inline-block after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-8 after:h-0.5 after:bg-primary-300">
+              Support
             </h3>
-            <ul className="space-y-2.5 text-sm text-white/80">
-              <li className="hover:text-accent-300 cursor-pointer transition-colors duration-300 hover:translate-x-1 inline-block">
+            <ul className="flex flex-col gap-3 text-sm text-neutral-600">
+              <li className="hover:text-primary-600 cursor-pointer transition-all duration-300 hover:translate-x-1 inline-block">
                 Help Center
               </li>
-              <li className="hover:text-accent-300 cursor-pointer transition-colors duration-300 hover:translate-x-1 inline-block">
+              <li className="hover:text-primary-600 cursor-pointer transition-all duration-300 hover:translate-x-1 inline-block">
                 Return Policy
               </li>
-              <li className="hover:text-accent-300 cursor-pointer transition-colors duration-300 hover:translate-x-1 inline-block">
+              <li className="hover:text-primary-600 cursor-pointer transition-all duration-300 hover:translate-x-1 inline-block">
                 Shipping Info
               </li>
-              <li className="hover:text-accent-300 cursor-pointer transition-colors duration-300 hover:translate-x-1 inline-block">
+              <li className="hover:text-primary-600 cursor-pointer transition-all duration-300 hover:translate-x-1 inline-block">
                 Track Order
               </li>
-              <li className="hover:text-accent-300 cursor-pointer transition-colors duration-300 hover:translate-x-1 inline-block">
+              <li className="hover:text-primary-600 cursor-pointer transition-all duration-300 hover:translate-x-1 inline-block">
                 Contact Us
               </li>
             </ul>
@@ -95,29 +106,29 @@ export default function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h3 className="text-xl font-semibold text-white mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <h3 className="text-lg font-medium text-primary-900 mb-6 relative inline-block after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-8 after:h-0.5 after:bg-primary-300">
               Stay Connected
             </h3>
-            <p className="text-sm text-white/80 mb-4">
+            <p className="text-sm text-neutral-600 mb-6">
               Subscribe to get special offers, free giveaways, and exclusive deals.
             </p>
 
-            <div className="flex items-center rounded-full overflow-hidden bg-white/10 border border-white/20 backdrop-blur-sm mb-3">
+            <div className="flex items-center rounded-xl overflow-hidden bg-white shadow-sm border border-primary-100 mb-3 focus-within:ring-2 focus-within:ring-primary-100 transition-all">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 text-sm bg-transparent text-white placeholder:text-white/60 focus:outline-none"
+                className="flex-1 px-4 py-3 text-sm bg-transparent text-neutral-800 placeholder:text-neutral-400 focus:outline-none"
               />
-              <button className="px-5 py-3 bg-accent-500 hover:bg-accent-600 text-white text-sm font-semibold transition-colors duration-300">
-                Subscribe
+              <button className="px-5 py-3 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold transition-colors duration-300">
+                Join
               </button>
             </div>
-            <p className="text-xs text-white/60">
-              We respect your privacy. Unsubscribe anytime.
+            <p className="text-xs text-neutral-500 mb-6">
+              We respect your privacy.
             </p>
 
             {/* Social Links */}
-            <div className="flex gap-3 mt-6">
+            <div className="flex gap-3">
               <FooterIcon Icon={FaFacebookF} />
               <FooterIcon Icon={FaInstagram} />
               <FooterIcon Icon={FaTwitter} />
@@ -127,21 +138,21 @@ export default function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-white/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="border-t border-primary-100 mt-16 pt-8 flex flex-col md:flex-row justify-center items-center gap-6">
           {/* Copyright */}
-          <p className="text-sm text-white/80">
-            © {new Date().getFullYear()} Sukanya. All Rights Reserved. Crafted with love for saree enthusiasts.
+          <p className="text-sm text-neutral-500">
+            © {new Date().getFullYear()} <span className="text-primary-900 font-medium">Sukanya</span>. All Rights Reserved.
           </p>
 
           {/* Payment Methods */}
-          <div className="flex items-center gap-2 text-xs text-white/60">
-            <span>We accept:</span>
-            <div className="flex gap-2">
-              <div className="px-2 py-1 bg-white/10 rounded text-white/80">Visa</div>
-              <div className="px-2 py-1 bg-white/10 rounded text-white/80">Mastercard</div>
-              <div className="px-2 py-1 bg-white/10 rounded text-white/80">UPI</div>
+          {/* <div className="flex items-center gap-4">
+            <span className="text-xs text-neutral-400 uppercase tracking-widest font-medium">Secure Payments</span>
+            <div className="flex gap-3">
+              <div className="px-3 py-1 bg-white border border-primary-50 rounded text-[10px] font-bold text-neutral-400 shadow-sm">VISA</div>
+              <div className="px-3 py-1 bg-white border border-primary-50 rounded text-[10px] font-bold text-neutral-400 shadow-sm">MASTERCARD</div>
+              <div className="px-3 py-1 bg-white border border-primary-50 rounded text-[10px] font-bold text-neutral-400 shadow-sm">UPI</div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>
@@ -151,8 +162,8 @@ export default function Footer() {
 const FooterIcon = ({ Icon }) => (
   <a
     href="#"
-    className="w-10 h-10 inline-flex items-center justify-center rounded-full bg-white/10 border border-white/20 text-white hover:bg-accent-500 hover:border-accent-500 transition-all duration-300 hover:scale-110"
+    className="w-10 h-10 inline-flex items-center justify-center rounded-xl bg-white border border-primary-100 text-primary-600 shadow-sm hover:bg-primary-600 hover:text-white hover:border-primary-600 transition-all duration-300 hover:-translate-y-1"
   >
-    <Icon />
+    <Icon className="text-lg" />
   </a>
 );

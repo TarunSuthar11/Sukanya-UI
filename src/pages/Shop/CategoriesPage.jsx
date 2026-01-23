@@ -31,7 +31,7 @@ export default function CategoriesPage() {
 
 
   return (
-    <div className="min-h-screen w-full bg-linear-to-b from-amber-50 via-white to-orange-50">
+    <div className="min-h-screen w-full bg-primary-50">
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-10 xl:px-16 py-8 md:py-12">
         <div className="text-center mb-8 md:mb-10">
           <p className="text-xs font-semibold tracking-[0.3em] text-amber-600 uppercase mb-2">

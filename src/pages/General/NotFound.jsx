@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 
 export default function NotFound() {
   return (
-    <div className="min-h-[70vh] w-full bg-gradient-to-b from-amber-50 via-white to-orange-50 flex items-center justify-center px-4 py-10">
+    <div className="min-h-[70vh] w-full  bg-primary-50 flex items-center justify-center px-4 py-10">
       <div className="max-w-xl w-full text-center">
-        <p className="text-xs font-semibold tracking-[0.3em] text-amber-600 uppercase mb-3">
+        <p className="text-sm font-semibold tracking-[0.3em] text-red-600 uppercase mb-3">
           404 Error
         </p>
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
@@ -15,19 +15,19 @@ export default function NotFound() {
           back to exploring beautiful sarees.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-gradient-to-r from-amber-600 to-orange-500 text-white text-sm md:text-base font-semibold shadow-lg hover:shadow-xl transition"
-          >
-            Go to Home
-          </Link>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6">
           <Link
             to="/shop"
-            className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-amber-200 bg-white text-amber-800 text-sm md:text-base font-semibold hover:bg-amber-50 transition"
-          >
+            className="flex btn-primary text-sm">
             Browse Sarees
           </Link>
+
+          <Link
+            to="/"
+            className="flex btn-secondary text-sm">
+            Go to Homepage
+          </Link>
+         
         </div>
 
         <p className="text-xs text-gray-400">

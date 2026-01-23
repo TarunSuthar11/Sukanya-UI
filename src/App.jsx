@@ -20,10 +20,15 @@ import { WishlistProvider } from "./context/WishlistContext";
 import { AuthProvider } from "./context/AuthContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import Toast from "./components/Shared/Toast";
+
+import Protected from "./components/Auth/ProtectedRoute.jsx";
 import ScrollToTop from "./components/Shared/ScrollToTop";
 import ProfilePage from "./pages/User/ProfilePage";
 import CartDrawer from "./components/Shop/CartDrawer";
 import { AnimatePresence } from "framer-motion";
+
+
+
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -31,21 +36,41 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+
         <Route path="/" element={<LandingPage />} />
         <Route path="/about" element={<About />} />
         <Route path="/shop" element={<ShopPage />} />
-        <Route path="/category" element={<CategoriesPage />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/collections" element={<CategoriesPage />} />
+        <Route path="/cart" element={
+          <Protected>
+            <Cart />
+          </Protected>} />
+        <Route path="/checkout" element={
+          <Protected>
+            <Checkout />
+          </Protected>} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/create-review" element={<CreateReview />} />
+        <Route path="/create-review" element={
+          <Protected>
+            <CreateReview />
+          </Protected>} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/products/:productId" element={<ProductDetailsPage />} />
         <Route path="/favorites" element={<WishlistPage />} />
-        <Route path="/my-orders" element={<OrdersPage />} />
-        <Route path="/orders/:orderId" element={<OrderDetail />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/my-orders" element={
+          <Protected>
+            <OrdersPage />
+          </Protected>} />
+        <Route path="/orders/:orderId" element={
+          <Protected>
+            <OrderDetail />
+          </Protected>} />
+        <Route path="/profile" element={
+          <Protected>
+            <ProfilePage />
+          </Protected>
+        } />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
@@ -55,8 +80,8 @@ function AnimatedRoutes() {
 function App() {
   return (
     <BrowserRouter>
-      <ScrollToTop />
       <AuthProvider>
+        <ScrollToTop />
         <WishlistProvider>
           <NotificationProvider>
             <div className="flex flex-col min-h-screen">
