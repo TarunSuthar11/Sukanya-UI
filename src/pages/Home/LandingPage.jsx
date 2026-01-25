@@ -3,11 +3,16 @@ import { Link } from "react-router-dom";
 import Slider from "../../components/Home/Slider";
 import CategoryCard from "../../components/Home/CategoryCard";
 import ProductCard from "../../components/Product/ProductCard";
-import categories from "../../data/categories";
 import products from "../../data/products";
+import { useGetCategories } from "../../hooks/useCategoryHooks";
+import { useGetFeaturedProducts } from "../../hooks/useProductHooks";
 
 export default function LandingPage() {
-  const featuredProducts = products.slice(0, 8);
+  const { data: categoryData, isLoading: categoriesLoading } = useGetCategories();
+  const { data: featuredData, isLoading: featuredLoading } = useGetFeaturedProducts();
+
+  const categories = categoryData?.data?.categories || [];
+  const featuredProducts = featuredData?.data?.featuredProducts || [];
 
   return (
     <motion.div
@@ -23,39 +28,47 @@ export default function LandingPage() {
       </section>
 
       {/* Category Section */}
-      <section className="py-12 md:py-20 lg:py-24 px-4 md:px-6 lg:px-8 bg-gradient-soft">
+      <section className="py-16 md:py-24 lg:py-32 px-4 md:px-8 lg:px-16 bg-[#FDFCFB]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12 md:mb-16"
+            className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16"
           >
-            <span className="inline-block px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">
-              Explore Collections
-            </span>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-neutral-900 mb-4">
-              Discover Our Saree Collections
-            </h2>
-            <p className="text-neutral-600 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-              From timeless silk to contemporary chiffon, find the perfect saree for every occasion
+            <div className="max-w-2xl">
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary-600 mb-4 block">Our Heritage</span>
+              <h2 className="text-4xl md:text-5xl lg:text-7xl font-bold text-neutral-900 leading-[1.1]" style={{ fontFamily: 'Tenor Sans, sans-serif' }}>
+                Curated Collections
+              </h2>
+            </div>
+            <p className="text-neutral-500 font-light max-w-sm text-sm leading-relaxed mb-1">
+              Explore our diverse range of traditional and modern sarees, each hand-picked for quality and elegance.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {categories.map((cat, index) => (
-              <motion.div
-                key={cat.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <CategoryCard category={cat} />
-              </motion.div>
-            ))}
-          </div>
+          {categoriesLoading ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map((n) => (
+                <div key={n} className="aspect-[3/4] rounded-[2rem] bg-neutral-100 animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+              {categories.map((cat, index) => (
+                <motion.div
+                  key={cat._id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: index * 0.1, ease: [0.33, 1, 0.68, 1] }}
+                >
+                  <CategoryCard category={cat} />
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -80,19 +93,27 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {featuredProducts.map((product, index) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <ProductCard product={product} />
-              </motion.div>
-            ))}
-          </div>
+          {featuredLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {[1, 2, 3, 4].map((n) => (
+                <div key={n} className="aspect-[3/4] rounded-2xl bg-neutral-100 animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {featuredProducts.map((product, index) => (
+                <motion.div
+                  key={product._id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <ProductCard product={product} />
+                </motion.div>
+              ))}
+            </div>
+          )}
 
           <motion.div
             initial={{ opacity: 0 }}

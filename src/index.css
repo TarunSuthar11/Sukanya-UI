@@ -122,10 +122,7 @@
     @apply text-neutral-600 leading-relaxed;
   }
 
-  /* ===== SMOOTH SCROLLING ===== */
-  html {
-    /* Instant scroll restoration on navigation */
-  }
+
 
   /* ===== SELECTION ===== */
   ::selection {

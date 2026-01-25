@@ -1,48 +1,94 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect, useMemo } from 'react';
+import { useAddToCart, useGetCart, useRemoveFromCart, useUpdateCart, useClearCart } from '../hooks/useCartHooks';
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const addToCartMutation = useAddToCart();
+  const removeFromCartMutation = useRemoveFromCart();
+  const updateCartMutation = useUpdateCart();
+  const clearCartMutation = useClearCart();
 
+  const { data: cartData, isLoading } = useGetCart();
+
+  // Map backend items to include id/_id for UI compatibility
+  const items = useMemo(() => {
+    const rawItems = cartData?.data?.items || [];
+    return rawItems.map(item => ({
+      ...item,
+      id: item.productId,
+      _id: item.productId
+    }));
+  }, [cartData]);
+
+  const [cartItems, setCartItems] = useState([]);
+
+  // Sync local state with remote data
+  useEffect(() => {
+    if (items) {
+      setCartItems(items);
+    }
+  }, [items]);
+
+  // cart drawer state
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
 
-  const addToCart = (item, quantity) => {
-    const itemId = item._id || item.id;
-    const existingItem = cartItems.find(cartItem => (cartItem._id || cartItem.id) === itemId);
+  const isInCart = (productId) => {
+    return cartItems.some(item => (item.productId === productId || item._id === productId || item.id === productId));
+  };
 
-    if (existingItem) {
-      setCartItems((prev) =>
-        prev.map(cartItem =>
-          (cartItem._id || cartItem.id) === itemId
-            ? { ...cartItem, quantity: cartItem.quantity + quantity }
-            : cartItem
-        )
-      );
-    } else {
-      setCartItems((prev) => [...prev, { ...item, quantity }]);
+  const addToCart = async (productOrId, quantity = 1) => {
+    const productId = typeof productOrId === 'object' ? (productOrId._id || productOrId.id) : productOrId;
+    if (!productId) {
+      console.error("No productId provided to addToCart");
+      return;
     }
 
-    // Automatically open the cart drawer when an item is added
-    openCart();
+    if (isInCart(productId)) {
+      openCart();
+      return;
+    }
+
+    try {
+      await addToCartMutation.mutateAsync({ productId, quantity });
+      openCart();
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  }
+
+  const removeFromCart = async (productId) => {
+    try {
+      await removeFromCartMutation.mutateAsync(productId);
+    } catch (error) {
+      console.error("Error removing from cart:", error);
+    }
   };
 
-  const removeFromCart = (itemId) => {
-    setCartItems((prev) => prev.filter(item => (item._id || item.id) !== itemId));
+  const updateQuantity = async (productId, quantity) => {
+    if (quantity < 1) {
+      return removeFromCart(productId);
+    }
+    try {
+      await updateCartMutation.mutateAsync({ productId, quantity });
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+    }
   };
 
-  const updateQuantity = (itemId, quantity) => {
-    if (quantity < 1) return;
-    setCartItems((prev) =>
-      prev.map(item => (item._id || item.id) === itemId ? { ...item, quantity } : item)
-    );
-  };
+  const clearCart = async () => {
+    try {
+      await clearCartMutation.mutateAsync();
+      setCartItems([]);
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+    }
+  }
 
-  const clearCart = () => setCartItems([]);
-
-  const cartTotal = cartItems.reduce((total, item) => total + (item.currentPrice * item.quantity), 0);
+  // Use finalAmount from backend if available, otherwise calculate locally
+  const cartTotal = cartData?.data?.finalAmount ?? cartItems.reduce((total, item) => total + (item.currentPrice * item.quantity), 0);
 
   return (
     <CartContext.Provider value={{
@@ -54,7 +100,9 @@ export const CartProvider = ({ children }) => {
       isCartOpen,
       openCart,
       closeCart,
-      cartTotal
+      cartTotal,
+      isLoading,
+      isInCart
     }}>
       {children}
     </CartContext.Provider>

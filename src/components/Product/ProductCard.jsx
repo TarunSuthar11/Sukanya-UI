@@ -8,26 +8,21 @@ import { WishlistContext } from '../../context/WishlistContext';
 import { NotificationContext } from '../../context/NotificationContext';
 
 export default function ProductCard({ product }) {
-  const { addToCart } = useContext(CartContext);
+  const { addToCart, isInCart } = useContext(CartContext);
   const { toggleWishlist, isInWishlist } = useContext(WishlistContext);
   const { showNotification } = useContext(NotificationContext);
 
-  const [isAdded, setIsAdded] = useState(false);
   const discount = Math.ceil(((product.actualPrice - product.currentPrice) * 100) / product.actualPrice);
-  const isLiked = isInWishlist(product.id || product._id);
+  const isLiked = isInWishlist(product._id);
+  const isAdded = isInCart(product?._id);
 
   const addItem = (e) => {
     e.preventDefault();
-    addToCart(product, 1);
+    if (isAdded) return;
+    addToCart(product?._id);
 
     // Feedback Logic
-    setIsAdded(true);
     showNotification(`${product.productName || 'Product'} added to cart!`, "success");
-
-    // Revert button state after 2 seconds
-    setTimeout(() => {
-      setIsAdded(false);
-    }, 2000);
   };
 
   const handleLike = (e) => {
@@ -51,11 +46,11 @@ export default function ProductCard({ product }) {
           />
 
           {/* Gradient Overlay on Hover */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
           {/* Discount Badge */}
           {discount > 0 && (
-            <div className="absolute top-3 left-0 bg-gradient-to-r from-red-500 to-red-600 text-white pl-3 pr-3 py-1.5 rounded-r-full text-xs font-bold shadow-lg">
+            <div className="absolute top-3 left-0 bg-linear-to-r from-red-500 to-red-600 text-white pl-3 pr-3 py-1.5 rounded-r-full text-xs font-bold shadow-lg">
               {discount}% OFF
             </div>
           )}
@@ -79,14 +74,14 @@ export default function ProductCard({ product }) {
               onClick={addItem}
               disabled={isAdded}
               className={`w-full py-2.5 text-sm flex items-center justify-center gap-2 transition-all duration-300 ${isAdded
-                  ? "bg-green-600 text-white shadow-lg cursor-default rounded-full"
-                  : "btn-primary"
+                ? "bg-green-600 text-white shadow-lg cursor-default rounded-full"
+                : "btn-primary"
                 }`}
             >
               {isAdded ? (
                 <>
                   <IoCheckmarkCircle className="text-lg" />
-                  Added
+                  Added to Cart
                 </>
               ) : (
                 <>
@@ -100,7 +95,7 @@ export default function ProductCard({ product }) {
 
         {/* Product Info */}
         <div className="p-4 flex-1 flex flex-col">
-          <h3 className="text-base md:text-lg font-semibold text-neutral-800 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors duration-300 min-h-[3rem]">
+          <h3 className="text-base md:text-lg font-semibold text-neutral-800 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors duration-300 min-h-12">
             {product?.productName}
           </h3>
 

@@ -1,40 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBox, FaChevronRight, FaFilter, FaSearch, FaHistory, FaTruck, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
-
-// Mock data updated for production feel
-const MOCK_ORDERS = [
-    {
-        _id: "ORD-928374",
-        createdAt: new Date("2024-01-20T10:30:00"),
-        orderStatus: "shipped",
-        totalItems: 1,
-        priceSummary: { grandTotal: 12500 },
-        itemsSummarized: "Royal Silk Kanjeevaram Saree",
-        expectedDelivery: "Jan 24, 2024",
-        isOngoing: true
-    },
-    {
-        _id: "ORD-123456",
-        createdAt: new Date("2024-01-15T15:45:00"),
-        orderStatus: "delivered",
-        totalItems: 2,
-        priceSummary: { grandTotal: 16800 },
-        itemsSummarized: "Peach Embroidered Saree + 1 more",
-        expectedDelivery: "Jan 18, 2024",
-        isOngoing: false
-    },
-    {
-        _id: "ORD-778899",
-        createdAt: new Date("2024-01-10T09:15:00"),
-        orderStatus: "cancelled",
-        totalItems: 1,
-        priceSummary: { grandTotal: 5600 },
-        itemsSummarized: "Cotton Daily Wear Saree",
-        expectedDelivery: null,
-        isOngoing: false
-    }
-];
+import { useGetMyOrders } from "../../hooks/useOrderHooks";
+import { FaBox, FaChevronRight, FaSearch, FaHistory, FaTruck, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 const statusConfig = {
     placed: { color: "text-blue-600", bg: "bg-blue-50", icon: FaBox },
@@ -47,30 +14,47 @@ const statusConfig = {
     returned: { color: "text-neutral-500", bg: "bg-neutral-100", icon: FaHistory },
 };
 
+const ongoingStatuses = ["placed", "confirmed", "packed", "shipped", "out_for_delivery"];
+
 export default function OrdersPage() {
     const [filter, setFilter] = useState("all"); // all, ongoing, past
     const [searchQuery, setSearchQuery] = useState("");
 
-    const filteredOrders = MOCK_ORDERS.filter(order => {
+    const { data: ordersData, isLoading, isError } = useGetMyOrders();
+    const orders = ordersData?.data || [];
+
+    const filteredOrders = orders.filter(order => {
+        const isOngoing = ongoingStatuses.includes(order.orderStatus);
+        const itemsSummarized = order.orderItems.map(i => i.productName).join(", ");
+
         const matchesFilter =
             filter === "all" ||
-            (filter === "ongoing" && order.isOngoing) ||
-            (filter === "past" && !order.isOngoing);
+            (filter === "ongoing" && isOngoing) ||
+            (filter === "past" && !isOngoing);
 
         const matchesSearch =
             order._id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            order.itemsSummarized.toLowerCase().includes(searchQuery.toLowerCase());
+            itemsSummarized.toLowerCase().includes(searchQuery.toLowerCase());
 
         return matchesFilter && matchesSearch;
     });
 
+    if (isLoading) return (
+        <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+                <div className="w-12 h-12 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin"></div>
+                <p className="font-serif text-neutral-500">Curating your order history...</p>
+            </div>
+        </div>
+    );
+
     return (
-        <div className="min-h-screen bg-[#FAF9F6] py-12 px-4 md:px-8 lg:px-16 mt-20">
+        <div className="min-h-screen bg-[#FAF9F6] py-16 px-4 md:px-8 lg:px-16">
             <div className="max-w-6xl mx-auto">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
                     <div>
-                        <h1 className="text-3xl font-serif text-neutral-900 mb-2">Order History</h1>
-                        <p className="text-sm text-neutral-500 font-light">Manage your purchases, tracking, and returns.</p>
+                        <h1 className="text-4xl font-bold text-neutral-900 mb-2" style={{ fontFamily: 'Tenor Sans, sans-serif' }}>My Orders</h1>
+                        <p className="text-neutral-500 font-light">Track, manage and review your ethnic collections.</p>
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4">
@@ -78,8 +62,8 @@ export default function OrdersPage() {
                             <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 text-sm" />
                             <input
                                 type="text"
-                                placeholder="Search orders..."
-                                className="pl-10 pr-4 py-2.5 bg-white border border-neutral-200 rounded-xl text-sm focus:border-primary-400 outline-none transition-all w-full sm:w-64"
+                                placeholder="Search by ID or items..."
+                                className="pl-10 pr-4 py-3 bg-white border border-neutral-100 rounded-2xl text-sm focus:border-primary-300 outline-none transition-all w-full sm:w-72 shadow-sm"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -88,14 +72,14 @@ export default function OrdersPage() {
                 </div>
 
                 {/* Filters */}
-                <div className="flex gap-1 p-1 bg-neutral-100 rounded-2xl w-fit mb-8">
+                <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 no-scrollbar">
                     {["all", "ongoing", "past"].map((f) => (
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
-                            className={`px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${filter === f
-                                    ? "bg-white text-primary-900 shadow-sm"
-                                    : "text-neutral-500 hover:text-neutral-700"
+                            className={`px-8 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all shrink-0 ${filter === f
+                                ? "bg-neutral-900 text-white shadow-lg shadow-neutral-200"
+                                : "bg-white text-neutral-400 border border-neutral-100 hover:border-neutral-200"
                                 }`}
                         >
                             {f}
@@ -104,116 +88,104 @@ export default function OrdersPage() {
                 </div>
 
                 {filteredOrders.length === 0 ? (
-                    <div className="bg-white rounded-3xl p-20 text-center border border-neutral-100">
-                        <div className="w-16 h-16 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-4 text-neutral-200">
+                    <div className="bg-white rounded-[2rem] p-20 text-center border border-neutral-100 shadow-sm">
+                        <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-6 text-neutral-200">
                             <FaBox size={32} />
                         </div>
-                        <h2 className="text-xl font-serif text-neutral-800 mb-2 font-medium uppercase tracking-wide">No Orders Found</h2>
-                        <p className="text-sm text-neutral-400 mb-8">Try adjusting your filters or search query.</p>
-                        <Link to="/shop" className="text-sm font-bold text-primary-700 hover:underline underline-offset-8 decoration-primary-200">
-                            Go to Shop →
+                        <h2 className="text-2xl font-serif text-neutral-800 mb-2 font-medium uppercase tracking-widest">No Collections Found</h2>
+                        <p className="text-neutral-400 mb-10 max-w-xs mx-auto text-sm leading-relaxed">It seems you haven't started your fashion journey with us yet or your filters are too specific.</p>
+                        <Link to="/shop" className="btn-primary px-12">
+                            Explore Collections
                         </Link>
                     </div>
                 ) : (
-                    <div className="space-y-4">
-                        {/* Desktop Table Header */}
-                        <div className="hidden lg:grid grid-cols-6 gap-4 px-8 py-4 bg-neutral-50 rounded-2xl text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">
-                            <div className="col-span-2">Order & Items</div>
-                            <div>Placed On</div>
-                            <div>Status</div>
-                            <div>Total</div>
-                            <div className="text-right">Actions</div>
-                        </div>
-
-                        {/* Order Items */}
+                    <div className="grid grid-cols-1 gap-6">
                         {filteredOrders.map((order) => (
                             <div
                                 key={order._id}
-                                className="bg-white rounded-2xl border border-neutral-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_10px_30px_rgba(0,0,0,0.05)] overflow-hidden group"
+                                className="bg-white rounded-[1.5rem] border border-neutral-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] overflow-hidden group hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-all duration-500"
                             >
-                                {/* Desktop View */}
-                                <div className="hidden lg:grid grid-cols-6 gap-4 items-center px-8 py-6">
-                                    <div className="col-span-2 flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-neutral-50 rounded-xl flex items-center justify-center text-primary-200 border border-neutral-100 group-hover:bg-primary-50 group-hover:text-primary-400 transition-colors">
-                                            <FaBox size={20} />
-                                        </div>
+                                <div className="flex flex-col lg:flex-row">
+                                    {/* Image Section */}
+                                    <div className="lg:w-48 h-64 lg:h-auto overflow-hidden bg-neutral-50 shrink-0 relative">
+                                        <img
+                                            src={order.orderItems[0]?.productImage}
+                                            alt=""
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                        />
+                                        {order.orderItems.length > 1 && (
+                                            <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1.5 rounded-full border border-white/20">
+                                                +{order.orderItems.length - 1} More
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Content Section */}
+                                    <div className="flex-1 p-6 lg:p-8 flex flex-col justify-between">
                                         <div>
-                                            <p className="text-sm font-bold text-neutral-800 font-mono tracking-tighter">{order._id}</p>
-                                            <p className="text-xs text-neutral-400 truncate max-w-[200px]">{order.itemsSummarized}</p>
+                                            <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
+                                                <div className="space-y-1">
+                                                    <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${statusConfig[order.orderStatus].bg} ${statusConfig[order.orderStatus].color} border border-current/10`}>
+                                                        {React.createElement(statusConfig[order.orderStatus].icon, { size: 10 })}
+                                                        {order.orderStatus.replace(/_/g, ' ')}
+                                                    </span>
+                                                    <p className="text-xs text-neutral-400 font-medium pt-1">
+                                                        Placed on {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                                                    </p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-[10px] font-black text-neutral-300 uppercase tracking-widest mb-1">Order Total</p>
+                                                    <p className="text-xl font-bold text-neutral-900">₹{order.priceSummary.grandTotal.toLocaleString()}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="mb-6">
+                                                <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest mb-2">Order Identification</p>
+                                                <h3 className="text-sm font-bold text-neutral-800 font-mono tracking-tight bg-neutral-50 w-fit px-3 py-1 rounded-lg border border-neutral-100">
+                                                    {order._id}
+                                                </h3>
+                                            </div>
+
+                                            <div className="border-t border-neutral-50 pt-4">
+                                                <p className="text-xs text-neutral-500 leading-relaxed line-clamp-1">
+                                                    <span className="font-bold text-neutral-700">Summary:</span> {order.orderItems.map(i => i.productName).join(", ")}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="text-sm text-neutral-600">
-                                        {order.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                    </div>
-
-                                    <div>
-                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusConfig[order.orderStatus].bg} ${statusConfig[order.orderStatus].color}`}>
-                                            {React.createElement(statusConfig[order.orderStatus].icon, { size: 10 })}
-                                            {order.orderStatus.replace(/_/g, ' ')}
-                                        </span>
-                                    </div>
-
-                                    <div className="text-sm font-bold text-neutral-800">
-                                        Rs. {order.priceSummary.grandTotal.toLocaleString()}
-                                    </div>
-
-                                    <div className="text-right">
-                                        <Link
-                                            to={`/orders/${order._id}`}
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white rounded-xl text-xs font-bold hover:bg-black transition-all active:scale-[0.98]"
-                                        >
-                                            Management
-                                            <FaChevronRight size={8} />
-                                        </Link>
-                                    </div>
-                                </div>
-
-                                {/* Mobile View */}
-                                <div className="lg:hidden p-6 space-y-4">
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 ${statusConfig[order.orderStatus].bg} ${statusConfig[order.orderStatus].color}`}>
-                                                {order.orderStatus.replace(/_/g, ' ')}
-                                            </span>
-                                            <p className="text-sm font-bold text-neutral-800 font-mono tracking-tighter">{order._id}</p>
+                                        <div className="flex items-center justify-between mt-8">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center text-primary-600">
+                                                    <FaTruck size={12} />
+                                                </div>
+                                                <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
+                                                    {order.orderStatus === 'delivered' ? 'Collection Delivered' : 'Standard Delivery'}
+                                                </p>
+                                            </div>
+                                            <div className="flex flex-col gap-2">
+                                                <Link
+                                                    to={`/orders/${order._id}`}
+                                                    className="inline-flex items-center gap-3 px-8 py-3.5 bg-neutral-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all active:scale-95 shadow-xl shadow-neutral-100 group w-full"
+                                                >
+                                                    Manage Order
+                                                    <FaChevronRight size={8} className="group-hover:translate-x-1 transition-transform" />
+                                                </Link>
+                                                {order.orderStatus === "delivered" && (
+                                                    <Link
+                                                        to={`/create-review/${order.orderItems[0].productId}`}
+                                                        className="text-center py-2 text-[9px] font-black uppercase tracking-widest text-primary-600 hover:text-primary-700 transition-colors"
+                                                    >
+                                                        Review Collection
+                                                    </Link>
+                                                )}
+                                            </div>
                                         </div>
-                                        <p className="text-sm font-bold text-neutral-900">Rs. {order.priceSummary.grandTotal.toLocaleString()}</p>
-                                    </div>
-
-                                    <p className="text-xs text-neutral-500 line-clamp-1">{order.itemsSummarized}</p>
-
-                                    <div className="flex items-center justify-between pt-4 border-t border-neutral-50">
-                                        <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-widest">
-                                            {order.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                        </p>
-                                        <Link
-                                            to={`/orders/${order._id}`}
-                                            className="text-xs font-bold text-primary-700 border-b border-primary-100 pb-0.5"
-                                        >
-                                            View Details
-                                        </Link>
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 )}
-
-                <div className="mt-12 p-8 bg-neutral-900 rounded-3xl text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="relative z-10 text-center md:text-left">
-                        <h3 className="text-xl font-serif mb-2">Need assistance with an order?</h3>
-                        <p className="text-sm text-neutral-400 font-light">Our concierge team is available 24/7 for your support.</p>
-                    </div>
-                    <button className="relative z-10 px-8 py-3 bg-white text-neutral-900 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-primary-50 transition-colors shadow-xl">
-                        Contact Concierge
-                    </button>
-
-                    {/* Subtle Decorative Background */}
-                    <div className="absolute right-0 top-0 h-full w-1/3 opacity-10 pointer-events-none">
-                        <FaBox size={200} className="rotate-12 translate-x-1/2 -translate-y-1/4" />
-                    </div>
-                </div>
             </div>
         </div>
     );

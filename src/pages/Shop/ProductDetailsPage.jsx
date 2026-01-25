@@ -29,10 +29,12 @@ const InfoPill = ({ icon, title, value }) => (
 export default function ProductDetailsPage() {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const { addToCart } = useContext(CartContext);
+  const { addToCart, isInCart } = useContext(CartContext);
   const [quantity, setQuantity] = useState(1);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const buyButtonsRef = useRef(null);
+
+  const isAdded = isInCart(productId);
 
   const { data: productData, isLoading: productLoading, isFetching: productFetching } = useQuery({
     queryKey: ["product", productId],
@@ -77,11 +79,13 @@ export default function ProductDetailsPage() {
   }, [product]);
 
   const addItem = () => {
-    addToCart(product, quantity);
+    addToCart(productId, quantity);
   };
 
   const buyItem = () => {
-    addToCart(product, quantity);
+    if (!isAdded) {
+      addToCart(productId, quantity);
+    }
     navigate('/cart');
   };
 
@@ -174,7 +178,7 @@ export default function ProductDetailsPage() {
                   className="flex-1 min-w-[160px] btn-secondary text-lg shadow-elegant hover:shadow-elegant-hover flex items-center justify-center gap-2 group"
                 >
                   <LuShoppingCart className="text-xl group-hover:scale-110 transition-transform" />
-                  Add to Cart
+                  {isAdded ? "Added to Cart" : "Add to Cart"}
                 </button>
                 <button
                   onClick={buyItem}

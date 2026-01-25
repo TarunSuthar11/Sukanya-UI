@@ -9,14 +9,42 @@ import { CartContext } from "../../context/CartContext";
 import { WishlistContext } from "../../context/WishlistContext";
 import { AuthContext } from "../../context/AuthContext";
 
+import { fetchSuggestions } from "../../service/ProductService";
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+
   const { cartItems, openCart } = useContext(CartContext);
   const { wishlistItems } = useContext(WishlistContext);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (searchQuery.length > 2) {
+        setIsSearchLoading(true);
+        const results = await fetchSuggestions(searchQuery);
+        setSuggestions(results?.data || []);
+        setIsSearchLoading(false);
+      } else {
+        setSuggestions([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
+
+  const handleSearch = (query) => {
+    if (!query.trim()) return;
+    setSuggestions([]);
+    setShowSearch(false);
+    navigate(`/search?q=${encodeURIComponent(query)}`);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,7 +58,7 @@ const Navbar = () => {
     <>
       <nav className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'glass shadow-lg' : 'bg-white shadow-sm'
         }`}>
-        <div className="flex items-center justify-between mx-auto h-18 px-4  max-w-7xl">
+        <div className="flex items-center justify-between mx-auto h-18 px-4 md:px-8  max-w-7xl">
           {/* Left Section - Menu + Logo */}
           <div className="relative flex items-center gap-4 md:w-1/3">
             <button
@@ -47,21 +75,73 @@ const Navbar = () => {
                 className="h-11 md:h-13  object-contain"
               />
             </Link> */}
-             <h2 className="text-2xl mt-1 lg:text-3xl flex items-center tracking-wider font-bold text-primary-700 ">
+            <h2 className="text-2xl mt-1 lg:text-3xl flex items-center tracking-wider font-bold text-primary-700 ">
               Sukanya
             </h2>
           </div>
 
           {/* Center Section - Search (Desktop) */}
-          <div className="hidden md:flex w-1/3 justify-center">
+          <div className="hidden md:flex w-1/3 justify-center relative">
             <div className="relative w-full max-w-md">
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch(searchQuery)}
                 placeholder="Search Sarees..."
                 className="w-full px-5 pr-12 py-2.5 rounded-full bg-neutral-100 border-2 border-transparent focus:border-primary-300 focus:bg-white focus:ring-4 focus:ring-primary-100 transition-all duration-300 outline-none text-sm"
               />
-              <IoSearchOutline className="absolute right-4 top-1/2 -translate-y-1/2 text-xl text-neutral-400" />
+              <button
+                onClick={() => handleSearch(searchQuery)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-xl text-neutral-400 hover:text-primary-600 transition-colors"
+              >
+                <IoSearchOutline />
+              </button>
             </div>
+
+            {/* Desktop Suggestions Dropdown */}
+            {searchQuery.length > 2 && (suggestions.length > 0 || isSearchLoading || searchQuery) && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-neutral-100 overflow-hidden z-50">
+                {isSearchLoading ? (
+                  <div className="p-4 text-center">
+                    <div className="w-5 h-5 border-2 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  </div>
+                ) : suggestions.length > 0 ? (
+                  <div className="max-h-96 overflow-y-auto scrollbar-thin">
+                    {suggestions.map((product) => (
+                      <Link
+                        key={product._id}
+                        to={`/products/${product._id}`}
+                        onClick={() => {
+                          setSearchQuery("");
+                          setSuggestions([]);
+                        }}
+                        className="flex items-center gap-4 p-3 hover:bg-neutral-50 transition-colors border-b border-neutral-50 last:border-0"
+                      >
+                        <img src={product.productImages[0]?.url} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-neutral-800 line-clamp-1">{product.productName}</p>
+                          <p className="text-[10px] text-neutral-500 uppercase tracking-wider">{product.productCategory?.categoryName || 'Saree'}</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-sm text-neutral-500">
+                    No suggestions found for "{searchQuery}"
+                  </div>
+                )}
+
+                {!isSearchLoading && (
+                  <button
+                    onClick={() => handleSearch(searchQuery)}
+                    className="w-full p-3 text-xs font-bold text-primary-600 hover:bg-primary-50 transition-colors text-center uppercase tracking-widest border-t border-neutral-100"
+                  >
+                    View all results
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Right Section - Icons */}
@@ -105,7 +185,7 @@ const Navbar = () => {
             ) : (
               <Link
                 to="/signin"
-                className="hidden lg:flex btn-primary text-sm"
+                className="hidden lg:flex p-2 px-6 btn-primary text-sm"
               >
                 Sign In
               </Link>
@@ -129,15 +209,56 @@ const Navbar = () => {
 
         {/* Mobile Search */}
         {showSearch && (
-          <div className="md:hidden px-4 py-2 border-t border-neutral-100 animate-fade-in">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search for sarees..."
-                className="w-full px-4 pr-10 py-2.5 rounded-full bg-neutral-100 border-2 border-transparent focus:border-primary-300 focus:bg-white focus:ring-4 focus:ring-primary-100 transition-all duration-300 outline-none text-sm"
-              />
-              <IoSearchOutline className="absolute right-4 top-1/2 -translate-y-1/2 text-lg text-neutral-400" />
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-neutral-100 shadow-xl z-40 animate-fade-in">
+            <div className="p-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch(searchQuery)}
+                  placeholder="Search for sarees..."
+                  autoFocus
+                  className="w-full px-4 pr-10 py-3 rounded-xl bg-neutral-100 border-2 border-transparent focus:border-primary-300 focus:bg-white focus:ring-4 focus:ring-primary-100 transition-all duration-300 outline-none text-base"
+                />
+                <button
+                  onClick={() => handleSearch(searchQuery)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xl text-neutral-400"
+                >
+                  <IoSearchOutline />
+                </button>
+              </div>
             </div>
+
+            {/* Mobile Suggestions Dropdown */}
+            {suggestions.length > 0 && searchQuery && (
+              <div className="max-h-[60vh] overflow-y-auto border-t border-neutral-50">
+                {suggestions.map((product) => (
+                  <Link
+                    key={product._id}
+                    to={`/products/${product._id}`}
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSuggestions([]);
+                      setShowSearch(false);
+                    }}
+                    className="flex items-center gap-4 p-4 hover:bg-neutral-50 transition-colors border-b border-neutral-50 last:border-0"
+                  >
+                    <img src={product.productImages[0]?.url} alt="" className="w-12 h-12 rounded-lg object-cover bg-neutral-100" />
+                    <div>
+                      <p className="text-sm font-bold text-neutral-800 line-clamp-1">{product.productName}</p>
+                      <p className="text-[10px] text-neutral-500 uppercase tracking-wider">{product.productCategory?.categoryName || 'Saree'}</p>
+                    </div>
+                  </Link>
+                ))}
+                <button
+                  onClick={() => handleSearch(searchQuery)}
+                  className="w-full p-4 text-xs font-bold text-primary-600 bg-primary-50 text-center uppercase tracking-widest"
+                >
+                  View all results for "{searchQuery}"
+                </button>
+              </div>
+            )}
           </div>
         )}
       </nav>
@@ -157,11 +278,11 @@ const Navbar = () => {
       >
         <div className="p-5 px-8  flex justify-between items-center border-b border-neutral-200 shrink-0">
           {/* <h2 className="font-bold text-2xl text-gradient-primary font-serif">Sukanya</h2> */}
-           <img
-                src="pink_favicon.png"
-                alt="Sukanya Logo"
-                className="h-8 md:h-10 rounded-lg "
-              />
+          <img
+            src="pink_favicon.png"
+            alt="Sukanya Logo"
+            className="h-8 md:h-10 rounded-lg "
+          />
           <button
             onClick={() => setIsOpen(false)}
             className="text-2xl text-neutral-600 hover:text-primary-600 transition-colors"

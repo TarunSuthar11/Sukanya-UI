@@ -16,6 +16,7 @@ import CreateReview from "./pages/Shop/CreateReview";
 import WishlistPage from "./pages/Shop/WishlistPage";
 import OrdersPage from "./pages/Shop/OrdersPage";
 import OrderDetail from "./pages/Shop/OrderDetail";
+import SearchPage from "./pages/Shop/SearchPage";
 import { WishlistProvider } from "./context/WishlistContext";
 import { AuthProvider } from "./context/AuthContext";
 import { NotificationProvider } from "./context/NotificationContext";
@@ -51,12 +52,13 @@ function AnimatedRoutes() {
           </Protected>} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/create-review" element={
+        <Route path="/create-review/:productId" element={
           <Protected>
             <CreateReview />
           </Protected>} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/products/:productId" element={<ProductDetailsPage />} />
+        <Route path="/search" element={<SearchPage />} />
         <Route path="/favorites" element={<WishlistPage />} />
         <Route path="/my-orders" element={
           <Protected>

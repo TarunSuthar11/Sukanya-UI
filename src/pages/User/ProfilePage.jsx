@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, useRef } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useUpdateUser, useUpdateAvatar } from "../../hooks/useAuthHooks";
 import { FaCamera, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaHistory, FaSignOutAlt, FaTimes, FaSave, FaEdit } from "react-icons/fa";
+import { Link } from "lucide-react";
 
 export default function ProfilePage() {
     const { user, logout } = useContext(AuthContext);
@@ -66,7 +67,7 @@ export default function ProfilePage() {
     };
 
     const handleFileChange = async (e) => {
-        const file = e.target.files?.[0];
+        const file = e.target.files?.[0].url;
         if (file) {
             const uploadFormData = new FormData();
             uploadFormData.append("avatar", file);
@@ -79,21 +80,21 @@ export default function ProfilePage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FAF9F6] pt-24 pb-12 px-4 sm:px-6 lg:px-16">
+        <div className="min-h-screen bg-[#FAF9F6] py-10 lg:py16 pb-12 px-4 sm:px-6 lg:px-16">
             <div className="max-w-4xl mx-auto">
 
                 {/* Profile Header */}
-                <div className="bg-white rounded-2xl p-8 md:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-neutral-100 flex flex-col md:flex-row items-center gap-10 mb-8">
+                <div className="bg-white rounded-xl p-8 md:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-neutral-100 flex flex-col md:flex-row items-center gap-10 mb-6">
                     <div className="relative group cursor-pointer" onClick={handleAvatarClick}>
                         <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-primary-50 shadow-xl transition-all duration-500 group-hover:scale-105">
                             <img
-                                src={user.avatar || "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"}
+                                src={user.avatar?.url || "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"}
                                 alt={user.firstName}
                                 className="w-full h-full object-cover"
                             />
                         </div>
                         <button
-                            className="absolute bottom-2 right-2 p-3 bg-primary-600 text-white rounded-full shadow-lg hover:bg-primary-700 transition-all active:scale-95"
+                            className="absolute bottom-2 z-30 right-2 p-3 bg-primary-600 text-white rounded-full shadow-lg hover:bg-primary-700 transition-all active:scale-95"
                             aria-label="Change Avatar"
                         >
                             <FaCamera size={14} />
@@ -114,10 +115,10 @@ export default function ProfilePage() {
 
                     <div className="flex-1 text-center md:text-left space-y-2">
                         <span className="text-[10px] font-black text-primary-600 uppercase tracking-[0.3em]">User Profile</span>
-                        <h1 className="text-3xl md:text-4xl font-serif font-bold text-neutral-900">
+                        <h1 className="text-3xl md:text-4xl  font-bold text-neutral-900">
                             {user.firstName} {user.lastName}
                         </h1>
-                        <p className="text-neutral-500 font-light italic">{user.email}</p>
+                        <p className="text-neutral-500 text-sm font-medium ">{user.email}</p>
                         <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
                             <div className="px-4 py-2 bg-neutral-50 rounded-xl border border-neutral-100 text-[10px] font-bold text-neutral-600 uppercase tracking-widest flex items-center gap-2">
                                 <FaHistory className="text-primary-400" /> Member since 2024
@@ -126,39 +127,41 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-8">
+                <div className="grid lg:grid-cols-3 gap-6">
 
                     {/* Navigation/Quick Links Sidebar */}
-                    <div className="lg:col-span-1 space-y-4">
-                        <button className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-neutral-100 shadow-sm hover:border-primary-200 hover:bg-primary-50/10 transition-all group">
+                    <div className="lg:col-span-1 space-y-3">
+                        <button className="w-full flex items-center justify-between p-4 bg-white rounded-lg border border-neutral-100 shadow-sm hover:border-primary-200 hover:bg-primary-50/10 transition-all group">
                             <span className="text-xs font-black text-neutral-800 uppercase tracking-widest flex items-center gap-3">
                                 <FaUser className="text-primary-600" /> Account Info
                             </span>
                             <div className="w-1.5 h-1.5 bg-primary-600 rounded-full" />
                         </button>
-                        <button className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-neutral-100 shadow-sm hover:border-primary-200 transition-all group opacity-60 grayscale hover:grayscale-0 hover:opacity-100">
+                        <button className="w-full flex items-center justify-between p-4 bg-white rounded-lg border border-neutral-100 shadow-sm hover:border-primary-200 transition-all group opacity-60 grayscale hover:grayscale-0 hover:opacity-100">
                             <span className="text-xs font-black text-neutral-800 uppercase tracking-widest flex items-center gap-3">
                                 <FaMapMarkerAlt className="text-primary-600" /> My Addresses
                             </span>
                         </button>
-                        <button className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-neutral-100 shadow-sm hover:border-primary-200 transition-all group opacity-60 grayscale hover:grayscale-0 hover:opacity-100">
-                            <span className="text-xs font-black text-neutral-800 uppercase tracking-widest flex items-center gap-3">
-                                <FaHistory className="text-primary-600" /> Order History
-                            </span>
+                           
+                        <button className="w-full flex items-center justify-between p-4 bg-white rounded-lg border border-neutral-100 shadow-sm hover:border-primary-200 transition-all group opacity-60 grayscale hover:grayscale-0 hover:opacity-100">
+                                <span className="text-xs font-black text-neutral-800 uppercase tracking-widest flex items-center gap-3">
+                                    <FaHistory className="text-primary-600" /> My Orders
+                                </span>
                         </button>
-                        <div className="pt-4 border-t border-neutral-100">
+
+                        {/* <div className="border-t border-neutral-100"> */}
                             <button
                                 onClick={logout}
-                                className="w-full flex items-center gap-3 p-4 text-red-500 text-xs font-black uppercase tracking-widest hover:bg-red-50 rounded-2xl transition-all"
+                                className="w-full flex items-center gap-3 p-4 shadow-sm text-red-500 text-xs font-black uppercase tracking-widest bg-white rounded-lg transition-all"
                             >
                                 <FaSignOutAlt /> Sign Out
                             </button>
-                        </div>
+                        {/* </div> */}
                     </div>
 
                     {/* Form Content Area */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-neutral-100">
+                        <div className="bg-white rounded-xl p-8 md:p-10 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-neutral-100">
                             <div className="flex justify-between items-center mb-8">
                                 <h2 className="text-xl font-serif font-bold text-neutral-800">Personal Details</h2>
                                 {!isEditing ? (

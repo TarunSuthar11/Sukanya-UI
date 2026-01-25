@@ -2,13 +2,16 @@ import { useContext, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiPackage, FiTruck, FiCreditCard } from "react-icons/fi";
 import { CartContext } from "../../context/CartContext";
-import { createOrder } from "../../service/OrderService";
+import { useCreateOrder } from "../../hooks/useOrderHooks";
+import { NotificationContext } from "../../context/NotificationContext";
 
 const currency = (value) => `₹${value.toLocaleString()}`;
 
 export default function Checkout() {
     const { cartItems } = useContext(CartContext);
+    const { showNotification } = useContext(NotificationContext);
     const navigate = useNavigate();
+    const createOrderMutation = useCreateOrder();
 
     const [formData, setFormData] = useState({
         fullName: "",
@@ -22,7 +25,6 @@ export default function Checkout() {
     });
 
     const [errors, setErrors] = useState({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const totals = useMemo(() => {
         const subtotal = cartItems.reduce((sum, item) => sum + item.currentPrice * item.quantity, 0);
@@ -85,19 +87,12 @@ export default function Checkout() {
         }
 
         if (cartItems.length === 0) {
-            alert("Your cart is empty!");
+            showNotification("Your cart is empty!", "error");
             return;
         }
 
-        setIsSubmitting(true);
-
         try {
             const orderData = {
-                items: cartItems.map(item => ({
-                    productId: item.id,
-                    quantity: item.quantity,
-                    price: item.currentPrice
-                })),
                 shippingAddress: {
                     fullName: formData.fullName,
                     phone: formData.phone,
@@ -107,27 +102,21 @@ export default function Checkout() {
                     state: formData.state,
                     pincode: formData.pincode
                 },
-                paymentMethod: formData.paymentMethod,
-                totalAmount: totals.total
+                paymentMethod: formData.paymentMethod
             };
 
-            console.log("Order Data:", orderData);
+            const response = await createOrderMutation.mutateAsync(orderData);
 
-            // Uncomment when API is ready
-            // const response = await createOrder(orderData);
-            // console.log("Order created:", response);
-
-            // For now, just show success and navigate
-            alert("Order placed successfully!");
-            navigate("/");
+            showNotification("Order placed successfully!", "success");
+            navigate(`/orders/${response.data._id}`);
 
         } catch (error) {
             console.error("Error placing order:", error);
-            alert("Failed to place order. Please try again.");
-        } finally {
-            setIsSubmitting(false);
+            showNotification(error.response?.data?.message || "Failed to place order. Please try again.", "error");
         }
     };
+
+    const isSubmitting = createOrderMutation.isPending;
 
     if (cartItems.length === 0) {
         return (
